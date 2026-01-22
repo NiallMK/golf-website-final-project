@@ -106,3 +106,52 @@ def cancel_booking(booking_id):
 
     finally:
         db.close()
+
+# -------------------------
+# GET AVAILABLE TEE TIMES
+# -------------------------
+@bookings_bp.route("/teetimes", methods=["GET"])
+def get_available_teetimes():
+    course_id = request.args.get("course_id")
+    date = request.args.get("date")
+
+    if not course_id or not date:
+        return jsonify({
+            "error": "course_id and date query parameters are required"
+        }), 400
+
+    db = get_db()
+    try:
+        cursor = db.cursor()
+
+        cursor.execute(
+            """
+            SELECT id, date, time
+            FROM tee_times
+            WHERE course_id = ?
+              AND date = ?
+              AND is_booked = 0
+            ORDER BY time
+            """,
+            (course_id, date)
+        )
+
+        rows = cursor.fetchall()
+
+        teetimes = [
+            {
+                "id": row["id"],
+                "date": row["date"],
+                "time": row["time"]
+            }
+            for row in rows
+        ]
+
+        return jsonify(teetimes), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        db.close()
+
