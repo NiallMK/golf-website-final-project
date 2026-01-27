@@ -86,3 +86,9 @@ CREATE TABLE handicap_history (
     calculated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+-- EXTRAS - LATER ALTERATIONS TO THE TABLES
+ALTER TABLE rounds
+ADD COLUMN is_completed INTEGER DEFAULT 0;
+

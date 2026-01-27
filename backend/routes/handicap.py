@@ -3,47 +3,59 @@ from db import get_db
 
 handicap_bp = Blueprint("handicap", __name__)
 
-@handicap_bp.route("/handicap/<int:user_id>", methods=["POST"])
-def calculate_handicap(user_id):
+@handicap_bp.route("/handicap/recalculate/<int:user_id>", methods=["POST"])
+def recalculate_handicap(user_id):
     db = get_db()
     try:
         cur = db.cursor()
 
-        # Get last 5 completed rounds from a user
+        # --------------------------------
+        # Get completed rounds for user
+        # --------------------------------
         cur.execute("""
             SELECT r.gross_score, c.par
             FROM rounds r
             JOIN courses c ON c.id = r.course_id
             WHERE r.user_id = ?
+              AND r.is_completed = 1
               AND r.gross_score IS NOT NULL
             ORDER BY r.date_played DESC
             LIMIT 5
         """, (user_id,))
-        rows = cur.fetchall()
 
-        if len(rows) < 3:
+        rounds = cur.fetchall()
+
+        if len(rounds) < 3:
             return jsonify({
-                "error": "Not enough completed rounds to calculate handicap"
-            }), 400
+                "message": "Not enough rounds to calculate handicap",
+                "rounds_used": len(rounds)
+            }), 200
 
-        differentials = [
-            row["gross_score"] - row["par"]
-            for row in rows
-        ]
+        # --------------------------------
+        # Calculate differentials
+        # --------------------------------
+        differentials = []
+        for r in rounds:
+            diff = r["gross_score"] - r["par"]
+            differentials.append(diff)
 
-        handicap = round(sum(differentials) / len(differentials), 1)
+        # Average of differentials
+        new_handicap = round(sum(differentials) / len(differentials), 1)
 
+        # --------------------------------
+        # Update user handicap
+        # --------------------------------
         cur.execute("""
             UPDATE users
             SET current_handicap = ?
             WHERE id = ?
-        """, (handicap, user_id))
+        """, (new_handicap, user_id))
 
         db.commit()
 
         return jsonify({
             "user_id": user_id,
-            "handicap": handicap,
+            "new_handicap": new_handicap,
             "rounds_used": len(differentials)
         }), 200
 

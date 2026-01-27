@@ -139,11 +139,26 @@ def submit_scores(round_id):
     try:
         cur = db.cursor()
 
-        # Ensure round exists
-        cur.execute("SELECT id FROM rounds WHERE id = ?", (round_id,))
-        if not cur.fetchone():
+        # -------------------------------
+        # Ensure round exists + not completed
+        # -------------------------------
+        cur.execute(
+            "SELECT id, is_completed FROM rounds WHERE id = ?",
+            (round_id,)
+        )
+        r = cur.fetchone()
+
+        if not r:
             return jsonify({"error": "Round not found"}), 404
 
+        if r["is_completed"] == 1:
+            return jsonify({
+                "error": "Scores already submitted for this round"
+            }), 409
+
+        # -------------------------------
+        # Begin transaction
+        # -------------------------------
         cur.execute("BEGIN")
 
         total = 0
@@ -163,10 +178,12 @@ def submit_scores(round_id):
 
             total += strokes
 
-        # Update gross score
+        # -------------------------------
+        # Update gross score + lock round
+        # -------------------------------
         cur.execute("""
             UPDATE rounds
-            SET gross_score = ?
+            SET gross_score = ?, is_completed = 1
             WHERE id = ?
         """, (total, round_id))
 
@@ -174,7 +191,8 @@ def submit_scores(round_id):
 
         return jsonify({
             "round_id": round_id,
-            "gross_score": total
+            "gross_score": total,
+            "status": "completed"
         }), 201
 
     except Exception as e:
@@ -230,6 +248,36 @@ def get_round(round_id):
             "round": dict(r),
             "scores": holes
         }), 200
+
+    finally:
+        db.close()
+
+    
+# -------------------------------------------------
+# GET A USERS ROUND HISTORY
+# -------------------------------------------------
+
+@rounds_bp.route("/rounds/user/<int:user_id>", methods=["GET"])
+def get_user_rounds(user_id):
+    db = get_db()
+    try:
+        cur = db.cursor()
+
+        cur.execute("""
+            SELECT
+                r.id,
+                r.date_played,
+                r.gross_score,
+                r.is_completed,
+                c.name AS course
+            FROM rounds r
+            JOIN courses c ON c.id = r.course_id
+            WHERE r.user_id = ?
+            ORDER BY r.date_played DESC
+        """, (user_id,))
+
+        rounds = [dict(row) for row in cur.fetchall()]
+        return jsonify(rounds), 200
 
     finally:
         db.close()

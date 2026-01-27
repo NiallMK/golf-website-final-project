@@ -6,6 +6,7 @@ from routes.bookings import bookings_bp
 from routes.rounds import rounds_bp
 from routes.handicap import handicap_bp
 from routes.courses import courses_bp
+from routes.users import users_bp
 
 
 def create_app():
@@ -18,12 +19,18 @@ def create_app():
     app.register_blueprint(rounds_bp, url_prefix="/api")
     app.register_blueprint(handicap_bp, url_prefix="/api")
     app.register_blueprint(courses_bp, url_prefix="/api")
+    app.register_blueprint(users_bp, url_prefix="/api")
 
     @app.route("/")
     def index():
         return {"status": "Golf API running"}
 
+    @app.route("/debug/routes")
+    def debug_routes():
+        return str(app.url_map)
+
     return app
+
 
 
 if __name__ == "__main__":
