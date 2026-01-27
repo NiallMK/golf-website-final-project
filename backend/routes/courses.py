@@ -61,3 +61,28 @@ def get_course(course_id):
 
     finally:
         db.close()
+#------------------------------------------------------------------
+#GET the individual holes 
+@courses_bp.route("/courses/<int:course_id>/holes", methods=["GET"])
+def get_course_holes(course_id):
+    db = get_db()
+    try:
+        cur = db.cursor()
+        cur.execute("""
+            SELECT id, hole_number, par
+            FROM holes
+            WHERE course_id = ?
+            ORDER BY hole_number
+        """, (course_id,))
+        rows = cur.fetchall()
+
+        return jsonify([
+            {
+                "id": r["id"],
+                "hole_number": r["hole_number"],
+                "par": r["par"]
+            }
+            for r in rows
+        ]), 200
+    finally:
+        db.close()

@@ -1,0 +1,11 @@
+<h1>Courses</h1>
+
+<p *ngIf="courses.length === 0">
+  No courses loaded yet.
+</p>
+
+<ul *ngIf="courses.length > 0">
+  <li *ngFor="let course of courses">
+    <strong>{{ course.name }}</strong> (Par {{ course.par }})
+  </li>
+</ul>

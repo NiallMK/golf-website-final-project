@@ -1,0 +1,47 @@
+<h2 class="page-title">Enter Scores</h2>
+
+<p *ngIf="holes.length === 0" class="loading">
+  Loading holes…
+</p>
+
+<form
+  *ngIf="holes.length > 0"
+  class="scorecard"
+  (ngSubmit)="submitScores()"
+  #scoreForm="ngForm"
+>
+
+  <div class="holes-grid">
+    <div class="hole-card" *ngFor="let h of holes; let i = index">
+      <div class="hole-header">
+        <span class="hole-number">Hole {{ h.hole_number }}</span>
+        <span class="par-badge">Par {{ h.par }}</span>
+      </div>
+
+      <input
+        type="number"
+        min="1"
+        [(ngModel)]="scores[i]"
+        name="score{{ i }}"
+        required
+        class="score-input"
+        placeholder="Score"
+      />
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="total">
+      <span>Total Score</span>
+      <strong>{{ getTotalScore() }}</strong>
+    </div>
+
+    <button
+      type="submit"
+      class="submit-btn"
+      [disabled]="!scoreForm.form.valid"
+    >
+      Submit Round
+    </button>
+  </div>
+</form>

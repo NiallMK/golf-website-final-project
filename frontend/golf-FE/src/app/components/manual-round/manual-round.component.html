@@ -1,0 +1,29 @@
+<h2>Record a Round</h2>
+
+<form (ngSubmit)="submitRound()">
+
+  <label>
+    Course:
+    <select [(ngModel)]="course_id" name="course" required>
+      <option [ngValue]="null">Select a course</option>
+      <option *ngFor="let c of courses" [ngValue]="c.id">
+        {{ c.name }} (Par {{ c.par }})
+      </option>
+    </select>
+  </label>
+
+  <br /><br />
+
+  <label>
+    Date played:
+    <input type="date"
+           [(ngModel)]="date_played"
+           name="date"
+           required />
+  </label>
+
+  <br /><br />
+
+  <button type="submit">Save Round</button>
+
+</form>

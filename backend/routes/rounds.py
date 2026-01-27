@@ -144,16 +144,6 @@ def submit_scores(round_id):
         if not cur.fetchone():
             return jsonify({"error": "Round not found"}), 404
 
-        # Prevent duplicate submissions
-        cur.execute(
-            "SELECT 1 FROM hole_scores WHERE round_id = ? LIMIT 1",
-            (round_id,)
-        )
-        if cur.fetchone():
-            return jsonify({
-                "error": "Scores already submitted for this round"
-            }), 409
-
         cur.execute("BEGIN")
 
         total = 0
@@ -162,9 +152,9 @@ def submit_scores(round_id):
             strokes = s.get("strokes")
 
             if hole_id is None or strokes is None:
-                raise ValueError(
-                    "Each score must include hole_id and strokes"
-                )
+                return jsonify({
+                    "error": "Each score needs hole_id and strokes"
+                }), 400
 
             cur.execute("""
                 INSERT INTO hole_scores (round_id, hole_id, strokes)
@@ -173,7 +163,7 @@ def submit_scores(round_id):
 
             total += strokes
 
-        # Store derived gross score
+        # Update gross score
         cur.execute("""
             UPDATE rounds
             SET gross_score = ?
@@ -195,6 +185,7 @@ def submit_scores(round_id):
         db.close()
 
 
+
 # -------------------------------------------------
 # GET ROUND DETAILS + SCORES
 # -------------------------------------------------
@@ -206,6 +197,7 @@ def get_round(round_id):
 
         cur.execute("""
             SELECT r.id,
+                   r.course_id,
                    r.date_played,
                    r.gross_score,
                    r.handicap_at_time,
