@@ -1,0 +1,28 @@
+<h2>Round Details</h2>
+
+<div *ngIf="round">
+  <p><strong>Course:</strong> {{ round.course }}</p>
+  <p><strong>Date:</strong> {{ round.date_played }}</p>
+
+  <p *ngIf="round.gross_score !== null">
+    <strong>Gross score:</strong> {{ round.gross_score }}
+  </p>
+
+  <p *ngIf="round.gross_score === null">
+    <em>Round in progress</em><br />
+    <a [routerLink]="['/rounds', round.id, 'scores']">
+      Continue scoring
+    </a>
+  </p>
+</div>
+
+<hr />
+
+<div *ngIf="scores.length > 0">
+  <h3>Hole Scores</h3>
+  <ul>
+    <li *ngFor="let s of scores">
+      Hole {{ s.hole }} – {{ s.strokes }}
+    </li>
+  </ul>
+</div>

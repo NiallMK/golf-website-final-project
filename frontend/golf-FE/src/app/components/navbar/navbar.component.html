@@ -2,5 +2,9 @@
   <a routerLink="/">Home</a>
   <a routerLink="/courses">Courses</a>
   <a routerLink="/rounds/new">Record Round</a>
-</nav>
+  <a routerLink="/rounds">My Rounds</a>
 
+  <span *ngIf="user">
+    Handicap: <strong>{{ user.current_handicap }}</strong>
+  </span>
+</nav>

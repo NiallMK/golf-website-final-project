@@ -1,13 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { WebserviceService } from '../../services/webservice.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  imports: [CommonModule, RouterModule],
 })
-export class NavbarComponent {}
+export class NavbarComponent implements OnInit {
+
+  user: any;
+
+  constructor(private ws: WebserviceService) {}
+
+  ngOnInit(): void {
+    this.ws.getUser(1).subscribe({
+      next: (data) => {
+        console.log('USER DATA:', data);
+        this.user = data;
+      },
+      error: (err) => {
+        console.error('USER ERROR:', err);
+      }
+    });
+  }
+
+}
+
 

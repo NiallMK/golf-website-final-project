@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
   selector: 'app-manual-round',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './manual-round.component.html'
+  templateUrl: './record-round.component.html'
 })
-export class ManualRoundComponent implements OnInit {
+export class RecordRoundComponent implements OnInit {
 
   courses: any[] = [];
   course_id: number | null = null;

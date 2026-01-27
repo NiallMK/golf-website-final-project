@@ -52,4 +52,18 @@ export class WebserviceService {
     );
   }
 
+  getUser(userId: number) {
+    return this.http.get<any>(
+      `http://127.0.0.1:5001/api/users/${userId}`
+    );
+  }
+
+  getUserRounds(userId: number) {
+    return this.http.get<any[]>(
+      `http://127.0.0.1:5001/api/rounds/user/${userId}`
+    );
+  }
+
+
+
 }

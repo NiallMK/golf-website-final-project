@@ -1,0 +1,16 @@
+<ul *ngIf="rounds.length > 0">
+  <li *ngFor="let r of rounds">
+    <a [routerLink]="['/rounds', r.id]">
+      <strong>{{ r.course }}</strong>
+    </a><br />
+
+    Date: {{ r.date_played }}<br />
+
+    <span *ngIf="r.is_completed">
+      Gross score: {{ r.gross_score }}
+    </span>
+    <span *ngIf="!r.is_completed">
+      In progress – <em>continue scoring</em>
+    </span>
+  </li>
+</ul>
