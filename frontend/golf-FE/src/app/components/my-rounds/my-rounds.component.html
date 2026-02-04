@@ -1,16 +1,43 @@
-<ul *ngIf="rounds.length > 0">
-  <li *ngFor="let r of rounds">
-    <a [routerLink]="['/rounds', r.id]">
-      <strong>{{ r.course }}</strong>
-    </a><br />
+<div class="rounds-container" *ngIf="rounds.length > 0">
 
-    Date: {{ r.date_played }}<br />
+  <div
+    class="round-card"
+    *ngFor="let r of rounds"
+    [routerLink]="['/rounds', r.id]"
+  >
+    <div class="round-header">
+      <h3 class="round-course">{{ r.course }}</h3>
 
-    <span *ngIf="r.is_completed">
-      Gross score: {{ r.gross_score }}
-    </span>
-    <span *ngIf="!r.is_completed">
-      In progress – <em>continue scoring</em>
-    </span>
-  </li>
-</ul>
+      <span
+        class="round-status completed"
+        *ngIf="r.is_completed"
+      >
+        Completed
+      </span>
+
+      <span
+        class="round-status in-progress"
+        *ngIf="!r.is_completed"
+      >
+        In progress
+      </span>
+    </div>
+
+    <div class="round-body">
+      <p class="round-date">
+        📅 {{ r.date_played }}
+      </p>
+
+      <p *ngIf="r.is_completed" class="round-score">
+        🏌️ Gross score:
+        <strong>{{ r.gross_score }}</strong>
+      </p>
+
+      <p *ngIf="!r.is_completed" class="round-continue">
+        ➜ Continue scoring
+      </p>
+    </div>
+
+  </div>
+
+</div>

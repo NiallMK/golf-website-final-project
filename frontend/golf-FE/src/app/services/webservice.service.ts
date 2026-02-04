@@ -64,6 +64,42 @@ export class WebserviceService {
     );
   }
 
+  getUserProfile(userId: number) {
+    return this.http.get<any>(
+      `http://127.0.0.1:5001/api/users/${userId}/profile`
+    );
+  }
+
+  getHandicapHistory(userId: number) {
+    return this.http.get<any[]>(
+      `http://127.0.0.1:5001/api/handicap/history/${userId}`
+    );
+  }
+
+  getAvailableTeeTimes(courseId: number, date: string) {
+    return this.http.get<any[]>(
+      `http://127.0.0.1:5001/api/teetimes/available?course_id=${courseId}&date=${date}`
+    );
+  }
+
+  bookTeeTime(userId: number, teeTimeId: number) {
+    return this.http.post(
+      'http://127.0.0.1:5001/api/bookings',
+      {
+        user_id: userId,
+        teetime_id: teeTimeId
+      }
+    );
+  }
+
+  getUserBookings(userId: number) {
+    return this.http.get<any[]>(
+      `http://127.0.0.1:5001/api/bookings/user/${userId}`
+    );
+  }
+
+
+
 
 
 }

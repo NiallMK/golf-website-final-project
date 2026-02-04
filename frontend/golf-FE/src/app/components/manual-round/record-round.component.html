@@ -1,29 +1,54 @@
-<h2>Record a Round</h2>
+<div class="record-round-container">
+  <div class="record-round-card">
 
-<form (ngSubmit)="submitRound()">
+    <h2 class="record-round-title">⛳ Record a Round</h2>
 
-  <label>
-    Course:
-    <select [(ngModel)]="course_id" name="course" required>
-      <option [ngValue]="null">Select a course</option>
-      <option *ngFor="let c of courses" [ngValue]="c.id">
-        {{ c.name }} (Par {{ c.par }})
-      </option>
-    </select>
-  </label>
+    <form (ngSubmit)="submitRound()" class="record-round-form">
 
-  <br /><br />
+      <!-- Course search -->
+      <div class="form-group autocomplete">
+        <label for="courseSearch">Course</label>
 
-  <label>
-    Date played:
-    <input type="date"
-           [(ngModel)]="date_played"
-           name="date"
-           required />
-  </label>
+        <input
+          id="courseSearch"
+          type="text"
+          placeholder="Start typing a course name..."
+          [(ngModel)]="courseSearch"
+          name="courseSearch"
+          (input)="filterCourses()"
+          autocomplete="off"
+          required
+        />
 
-  <br /><br />
+        <ul *ngIf="filteredCourses.length > 0" class="suggestions">
+          <li
+            *ngFor="let c of filteredCourses"
+            (click)="selectCourse(c)"
+          >
+            {{ c.name }}
+            <span class="par">(Par {{ c.par }})</span>
+          </li>
+        </ul>
+      </div>
 
-  <button type="submit">Save Round</button>
+      <!-- Date -->
+      <div class="form-group">
+        <label for="date">Date played</label>
+        <input
+          id="date"
+          type="date"
+          [(ngModel)]="date_played"
+          name="date"
+          required
+        />
+      </div>
 
-</form>
+      <!-- Submit -->
+      <button type="submit" class="btn-save">
+        Save Round
+      </button>
+
+    </form>
+
+  </div>
+</div>

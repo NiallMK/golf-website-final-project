@@ -7,7 +7,8 @@ import { WebserviceService } from '../../services/webservice.service';
   selector: 'app-my-rounds',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './my-rounds.component.html'
+  templateUrl: './my-rounds.component.html',
+  styleUrls: ['./my-rounds.component.css']
 })
 export class MyRoundsComponent implements OnInit {
 

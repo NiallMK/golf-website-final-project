@@ -1,0 +1,66 @@
+/* ==============================
+   GOLF NAVBAR – FULL STYLES
+   ============================== */
+
+nav.golf-navbar {
+  background-color: #1f7a4f; /* main golf green */
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* BRAND */
+nav.golf-navbar .navbar-brand {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-right: 1rem;
+}
+
+/* NAV LINKS */
+nav.golf-navbar .nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+/* HOVER HIGHLIGHT */
+nav.golf-navbar .nav-link:hover {
+  background-color: #145a38; /* darker green */
+  transform: scale(1.05);
+}
+
+/* ACTIVE ROUTE */
+nav.golf-navbar .nav-link.active {
+  background-color: #0f4d2f;
+  font-weight: 600;
+}
+
+/* HANDICAP TEXT */
+nav.golf-navbar .handicap-badge {
+  color: #ffffff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+/* HANDICAP BADGE */
+nav.golf-navbar .badge {
+  background-color: #145a38;
+  color: #ffffff;
+  font-size: 0.9rem;
+  padding: 0.45em 0.6em;
+  border-radius: 0.4rem;
+}
+
+/* MOBILE TOGGLER */
+nav.golf-navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+nav.golf-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}

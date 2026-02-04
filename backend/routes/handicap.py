@@ -65,3 +65,6 @@ def recalculate_handicap(user_id):
 
     finally:
         db.close()
+
+
+

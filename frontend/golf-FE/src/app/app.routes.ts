@@ -5,6 +5,8 @@ import { RecordRoundComponent } from './components/manual-round/record-round.com
 import { ScoreEntryComponent } from './components/score-entry/score-entry.component';
 import { MyRoundsComponent } from './components/my-rounds/my-rounds.component';
 import { RoundDetailComponent } from './components/round-detail/round-detail.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { BookTeeTimeComponent } from './components/book-tee-time/book-tee-time.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,6 +14,9 @@ export const routes: Routes = [
   { path: 'rounds/new', component: RecordRoundComponent },
   { path: 'rounds/:roundId/scores', component: ScoreEntryComponent},
   { path: 'rounds', component: MyRoundsComponent},
-  { path: 'rounds/:id', component: RoundDetailComponent}
+  { path: 'rounds/:id', component: RoundDetailComponent},
+  { path: 'profile', component: ProfileComponent},
+  { path: 'book', component: BookTeeTimeComponent }
+
 
 ];

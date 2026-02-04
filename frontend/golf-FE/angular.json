@@ -27,6 +27,7 @@
               }
             ],
             "styles": [
+              "C:/Users/mcker/golf-website/frontend/golf-FE/node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -85,6 +86,7 @@
               }
             ],
             "styles": [
+              "C:/Users/mcker/golf-website/frontend/golf-FE/node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []

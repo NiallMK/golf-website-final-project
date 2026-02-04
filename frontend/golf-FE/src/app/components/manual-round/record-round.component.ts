@@ -8,7 +8,8 @@ import { Router } from '@angular/router';
   selector: 'app-manual-round',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './record-round.component.html'
+  templateUrl: './record-round.component.html',
+  styleUrls: ['./record-round.component.css']
 })
 export class RecordRoundComponent implements OnInit {
 
@@ -47,4 +48,27 @@ export class RecordRoundComponent implements OnInit {
     });
 
   }
+
+  courseSearch: string = '';
+  filteredCourses: any[] = [];
+
+  filterCourses() {
+    if (!this.courseSearch) {
+      this.filteredCourses = [];
+      return;
+    }
+
+    const search = this.courseSearch.toLowerCase();
+
+    this.filteredCourses = this.courses
+      .filter(c => c.name.toLowerCase().includes(search))
+      .slice(0, 6); // limit suggestions
+  }
+
+  selectCourse(course: any) {
+    this.course_id = course.id;
+    this.courseSearch = course.name;
+    this.filteredCourses = [];
+  }
+
 }

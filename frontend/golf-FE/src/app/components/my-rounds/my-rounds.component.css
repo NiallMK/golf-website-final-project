@@ -1,2 +1,82 @@
-.completed { color: #2e7d32; }
-.in-progress { color: #c62828; }
+/* ==============================
+   ROUNDS LIST
+   ============================== */
+
+.rounds-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+/* ROUND CARD */
+.round-card {
+  background: #ffffff;
+  padding: 1.2rem 1.4rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* HOVER EFFECT */
+.round-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* HEADER */
+.round-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.round-course {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f7a4f;
+}
+
+/* STATUS BADGES */
+.round-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.round-status.completed {
+  background-color: #e6f4ee;
+  color: #1f7a4f;
+}
+
+.round-status.in-progress {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* BODY */
+.round-body p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.round-date {
+  color: #555;
+}
+
+.round-score {
+  margin-top: 0.4rem;
+}
+
+.round-continue {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  color: #1f7a4f;
+}

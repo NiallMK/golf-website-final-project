@@ -1,0 +1,146 @@
+/* ==============================
+   PROFILE PAGE
+   ============================== */
+
+.profile-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* HEADER */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  background: #1f7a4f;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-info h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.handicap {
+  margin-top: 0.3rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.handicap-value {
+  background: #e6f4ee;
+  color: #1f7a4f;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  margin-left: 0.4rem;
+}
+
+/* ==============================
+   STATS
+   ============================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 1.4rem 1rem;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f7a4f;
+}
+
+.stat-label {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==============================
+   BOOKINGS
+   ============================== */
+
+.bookings-section h3 {
+  margin-bottom: 1rem;
+  color: #1f7a4f;
+  font-weight: 700;
+}
+
+.empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* LIST */
+.booking-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+/* BOOKING CARD */
+.booking-card {
+  background: #ffffff;
+  padding: 1rem 1.2rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+}
+
+.booking-course {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #333;
+}
+
+.booking-details {
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==============================
+   LOADING
+   ============================== */
+
+.loading {
+  padding: 3rem;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}

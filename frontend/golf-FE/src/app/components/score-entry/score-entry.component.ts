@@ -16,7 +16,7 @@ export class ScoreEntryComponent implements OnInit {
   courseId!: number;
 
   holes: any[] = [];
-  scores: number[] = [];
+  scores: (number | null)[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -25,50 +25,74 @@ export class ScoreEntryComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // 1️⃣ Get round ID from URL
+    // Get round ID from URL
     this.roundId = Number(this.route.snapshot.paramMap.get('roundId'));
 
-    // 2️⃣ Load round → extract course_id
+    // Load round → get course_id
     this.webService.getRound(this.roundId).subscribe({
       next: (res: any) => {
-        console.log('ROUND RESPONSE:', res);
-
         this.courseId = res.round.course_id;
-        console.log('COURSE ID:', this.courseId);
 
-        // 3️⃣ Load holes for course
+        // Load holes for this course
         this.webService.getCourseHoles(this.courseId).subscribe({
           next: (holes: any[]) => {
-            console.log('HOLES:', holes);
-
             this.holes = holes;
             this.scores = new Array(this.holes.length).fill(null);
           },
-          error: err => {
-            console.error('Failed to load holes', err);
-          }
+          error: err => console.error('Failed to load holes', err)
         });
       },
-      error: err => {
-        console.error('Failed to load round', err);
-      }
+      error: err => console.error('Failed to load round', err)
     });
   }
 
-  // 4️⃣ Submit scores
+  // Disable submit until every hole has a score
+  get allScoresEntered(): boolean {
+    return (
+      this.scores.length === this.holes.length &&
+      this.scores.every(s => s !== null && s > 0)
+    );
+  }
+
+  // Total score (live)
+  get totalScore(): number {
+    return this.scores.reduce<number>(
+      (sum, s) => sum + (s ?? 0),
+      0
+    );
+  }
+
+
+  // Front 9 total
+  get frontNineTotal(): number {
+    return this.holes.reduce((sum, h, i) => {
+      return h.hole_number <= 9 ? sum + (this.scores[i] ?? 0) : sum;
+    }, 0);
+  }
+
+  // Back 9 total
+  get backNineTotal(): number {
+    return this.holes.reduce((sum, h, i) => {
+      return h.hole_number > 9 ? sum + (this.scores[i] ?? 0) : sum;
+    }, 0);
+  }
+
+  // Submit scores
   submitScores(): void {
+
+    if (!this.allScoresEntered) {
+      alert('Please enter a score for every hole');
+      return;
+    }
 
     const payload = this.holes.map((h, i) => ({
       hole_id: h.id,
       strokes: this.scores[i]
     }));
 
-    console.log('SUBMITTING SCORES:', payload);
-
     this.webService.submitScores(this.roundId, payload).subscribe({
-      next: res => {
+      next: () => {
         alert('Scores submitted successfully!');
-        console.log('RESULT:', res);
       },
       error: err => {
         console.error('Failed to submit scores', err);
@@ -76,11 +100,4 @@ export class ScoreEntryComponent implements OnInit {
       }
     });
   }
-
-  getTotalScore(): number {
-    return this.scores
-      .filter(s => s)
-      .reduce((sum, s) => sum + Number(s), 0);
-  }
-
 }

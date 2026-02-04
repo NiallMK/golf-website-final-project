@@ -1,0 +1,67 @@
+<div class="page-shell">
+
+  <div class="center-column">
+
+    <div class="booking-shell">
+
+      <!-- Header -->
+      <header class="booking-header">
+        <h1>Book a Tee Time</h1>
+        <p>Select your course and secure your round</p>
+      </header>
+
+      <!-- Main Card -->
+      <div class="booking-card">
+
+        <!-- Filters -->
+        <section class="filters-card">
+          <div class="filter">
+            <label>Course</label>
+            <select [(ngModel)]="course_id" (change)="loadTeeTimes()">
+              <option value="">Select course</option>
+              <option *ngFor="let c of courses" [value]="c.id">
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter">
+            <label>Date</label>
+            <input
+              type="date"
+              [(ngModel)]="date"
+              (change)="loadTeeTimes()"
+            />
+          </div>
+        </section>
+
+        <!-- Divider -->
+        <div class="section-divider"></div>
+
+        <!-- Tee Times -->
+        <section class="times-card">
+          <h3>Available Tee Times</h3>
+
+          <div class="empty" *ngIf="teeTimes.length === 0">
+            No tee times available
+          </div>
+
+          <div class="times-grid" *ngIf="teeTimes.length > 0">
+            <button
+              class="time-slot"
+              *ngFor="let t of teeTimes"
+              (click)="book(t.id)"
+            >
+              <span class="time">{{ t.time }}</span>
+              <span class="action">Book</span>
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

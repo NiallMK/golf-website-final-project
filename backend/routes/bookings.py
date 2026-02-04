@@ -110,48 +110,61 @@ def cancel_booking(booking_id):
 # -------------------------
 # GET AVAILABLE TEE TIMES
 # -------------------------
-@bookings_bp.route("/teetimes", methods=["GET"])
+@bookings_bp.route("/teetimes/available", methods=["GET"])
 def get_available_teetimes():
     course_id = request.args.get("course_id")
     date = request.args.get("date")
 
     if not course_id or not date:
-        return jsonify({
-            "error": "course_id and date query parameters are required"
-        }), 400
+        return jsonify({"error": "course_id and date required"}), 400
 
     db = get_db()
     try:
-        cursor = db.cursor()
+        cur = db.cursor()
 
-        cursor.execute(
-            """
-            SELECT id, date, time
+        cur.execute("""
+            SELECT id, time
             FROM tee_times
             WHERE course_id = ?
               AND date = ?
               AND is_booked = 0
             ORDER BY time
-            """,
-            (course_id, date)
-        )
+        """, (course_id, date))
 
-        rows = cursor.fetchall()
-
-        teetimes = [
-            {
-                "id": row["id"],
-                "date": row["date"],
-                "time": row["time"]
-            }
-            for row in rows
-        ]
-
+        teetimes = [dict(row) for row in cur.fetchall()]
         return jsonify(teetimes), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
     finally:
         db.close()
+
+#------------------------
+# GET USER BOOKING HISTORY
+#------------------------
+
+@bookings_bp.route("/bookings/user/<int:user_id>", methods=["GET"])
+def get_user_bookings(user_id):
+    db = get_db()
+    try:
+        cur = db.cursor()
+
+        cur.execute("""
+            SELECT
+                b.id,
+                t.date,
+                t.time,
+                c.name AS course_name,
+                t.is_booked
+            FROM bookings b
+            JOIN tee_times t ON b.teetime_id = t.id
+            JOIN courses c ON t.course_id = c.id
+            WHERE b.user_id = ?
+            ORDER BY t.date DESC, t.time DESC
+        """, (user_id,))
+
+        bookings = [dict(row) for row in cur.fetchall()]
+        return jsonify(bookings), 200
+
+    finally:
+        db.close()
+
 

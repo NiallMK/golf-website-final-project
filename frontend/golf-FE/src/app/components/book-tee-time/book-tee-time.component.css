@@ -1,0 +1,136 @@
+/* Page shell */
+.page-shell {
+  min-height: 100vh;
+  background: #0f5132;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+}
+
+/* Central column */
+.center-column {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Booking shell */
+.booking-shell {
+  background: linear-gradient(180deg, #1b7a4a, #0f5132);
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.4);
+}
+
+/* Header */
+.booking-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.booking-header h1 {
+  font-size: 2.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.booking-header p {
+  opacity: 0.85;
+}
+
+/* Main card */
+.booking-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 2rem;
+}
+
+/* Filters container */
+.filters-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.filter label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #0f5132;
+}
+
+.filter select,
+.filter input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: 1px solid #ced4da;
+}
+
+/* Divider */
+.section-divider {
+  height: 1px;
+  background: #dee2e6;
+  margin: 2rem 0;
+}
+
+/* Tee times card */
+.times-card h3 {
+  margin-bottom: 1.2rem;
+  color: #0f5132;
+}
+
+.empty {
+  text-align: center;
+  color: #6c757d;
+  padding: 2rem 0;
+}
+
+/* Grid */
+.times-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+/* Time slot */
+.time-slot {
+  background: linear-gradient(135deg, #1b7a4a, #0f5132);
+  border: none;
+  border-radius: 14px;
+  padding: 1rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.time-slot:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.time {
+  font-weight: 700;
+}
+
+.action {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  .filters-card {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-header h1 {
+    font-size: 2rem;
+  }
+}

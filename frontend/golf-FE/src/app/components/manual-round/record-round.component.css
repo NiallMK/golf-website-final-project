@@ -1,0 +1,125 @@
+/* ==============================
+   RECORD ROUND – SEARCH VERSION
+   ============================== */
+
+.record-round-container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f7f5, #e6f0eb);
+  padding: 2rem;
+}
+
+.record-round-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.record-round-title {
+  text-align: center;
+  margin-bottom: 1.8rem;
+  color: #1f7a4f;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* FORM */
+.record-round-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-group label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* INPUTS */
+.form-group input {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1f7a4f;
+  box-shadow: 0 0 0 3px rgba(31, 122, 79, 0.15);
+}
+
+/* AUTOCOMPLETE */
+.autocomplete {
+  position: relative;
+}
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 0.6rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  list-style: none;
+  padding: 0.3rem 0;
+  margin: 0;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestions li {
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.15s ease;
+}
+
+.suggestions li:hover {
+  background-color: #f0f6f3;
+}
+
+.suggestions .par {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* BUTTON */
+.btn-save {
+  margin-top: 0.8rem;
+  padding: 0.7rem;
+  background-color: #1f7a4f;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-save:hover {
+  background-color: #145a38;
+  transform: translateY(-1px);
+}
+
+.btn-save:active {
+  transform: translateY(0);
+}

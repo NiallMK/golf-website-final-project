@@ -1,0 +1,70 @@
+<div class="profile-page">
+
+  <ng-container *ngIf="profile; else loading">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ profile.name.charAt(0) }}
+      </div>
+
+      <div class="profile-info">
+        <h2>{{ profile.name }}</h2>
+        <p class="handicap">
+          Handicap
+          <span class="handicap-value">
+            {{ profile.current_handicap }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number">{{ profile.total_rounds }}</span>
+        <span class="stat-label">Total Rounds</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-number">{{ profile.completed_rounds }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-number">{{ profile.in_progress_rounds }}</span>
+        <span class="stat-label">In Progress</span>
+      </div>
+    </div>
+
+    <!-- Booking history -->
+    <div class="bookings-section">
+      <h3>📅 Booking History</h3>
+
+      <p class="empty" *ngIf="bookings.length === 0">
+        No bookings yet
+      </p>
+
+      <div class="booking-list" *ngIf="bookings.length > 0">
+        <div class="booking-card" *ngFor="let b of bookings">
+          <div class="booking-course">
+            {{ b.course_name }}
+          </div>
+
+          <div class="booking-details">
+            <span>📆 {{ b.date }}</span>
+            <span>⏰ {{ b.time }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>
+
+<ng-template #loading>
+  <div class="loading">
+    Loading profile…
+  </div>
+</ng-template>

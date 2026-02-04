@@ -1,47 +1,32 @@
-<h2 class="page-title">Enter Scores</h2>
+<h2>Enter Scores</h2>
 
-<p *ngIf="holes.length === 0" class="loading">
-  Loading holes…
-</p>
+<p *ngIf="holes.length === 0">Loading holes...</p>
 
-<form
-  *ngIf="holes.length > 0"
-  class="scorecard"
-  (ngSubmit)="submitScores()"
-  #scoreForm="ngForm"
->
+<form *ngIf="holes.length > 0" (ngSubmit)="submitScores()">
 
-  <div class="holes-grid">
-    <div class="hole-card" *ngFor="let h of holes; let i = index">
-      <div class="hole-header">
-        <span class="hole-number">Hole {{ h.hole_number }}</span>
-        <span class="par-badge">Par {{ h.par }}</span>
-      </div>
-
+  <div *ngFor="let h of holes; let i = index" class="hole-row">
+    <label>
+      Hole {{ h.hole_number }} (Par {{ h.par }}):
       <input
         type="number"
         min="1"
         [(ngModel)]="scores[i]"
         name="score{{ i }}"
         required
-        class="score-input"
-        placeholder="Score"
       />
-    </div>
+    </label>
   </div>
 
-  <div class="summary">
-    <div class="total">
-      <span>Total Score</span>
-      <strong>{{ getTotalScore() }}</strong>
-    </div>
+  <hr />
 
-    <button
-      type="submit"
-      class="submit-btn"
-      [disabled]="!scoreForm.form.valid"
-    >
-      Submit Round
-    </button>
-  </div>
+  <p><strong>Front 9:</strong> {{ frontNineTotal }}</p>
+  <p><strong>Back 9:</strong> {{ backNineTotal }}</p>
+  <p><strong>Total:</strong> {{ totalScore }}</p>
+
+  <br />
+
+  <button type="submit" [disabled]="!allScoresEntered">
+    Submit Scores
+  </button>
+
 </form>
