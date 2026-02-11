@@ -1,97 +1,197 @@
+/* ==============================
+   ENTER SCORES PAGE
+   ============================== */
+
+.enter-scores-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
 .page-title {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  color: #1f7a4f;
+  font-weight: 700;
 }
 
 .loading {
+  color: #777;
   font-style: italic;
-  color: #666;
 }
 
-.scorecard {
-  max-width: 900px;
+/* ==============================
+   SCORECARD TABLE
+   ============================== */
+
+.scorecard-wrapper {
+  overflow-x: auto;
 }
 
-.holes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-}
-
-.hole-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.hole-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.hole-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.hole-number {
-  font-weight: 600;
-}
-
-.par-badge {
-  background: #e8f0ff;
-  color: #2b5cff;
-  padding: 0.25rem 0.5rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-}
-
-.score-input {
+.scorecard-entry {
   width: 100%;
-  padding: 0.5rem;
-  font-size: 1.1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* HEADER */
+.scorecard-entry thead th {
+  background: #1f7a4f;
+  color: #ffffff;
+  padding: 0.7rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   text-align: center;
 }
 
-.score-input:focus {
-  outline: none;
-  border-color: #2b5cff;
-  box-shadow: 0 0 0 2px rgba(43, 92, 255, 0.15);
+/* BODY */
+.scorecard-entry tbody td {
+  padding: 0.55rem 0.45rem;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+  transition: background-color 0.2s ease;
 }
 
-.summary {
+/* ROW LABEL */
+.scorecard-entry tbody td:first-child {
+  font-weight: 700;
+  background: #f5faf7;
+}
+
+/* PAR ROW */
+.par-row td {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* ==============================
+   INPUTS
+   ============================== */
+
+.score-row input {
+  width: 3.2rem;
+  padding: 0.3rem;
+  text-align: center;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.score-row input:focus {
+  outline: none;
+  border-color: #1f7a4f;
+  box-shadow: 0 0 0 2px rgba(31, 122, 79, 0.15);
+  background: #ffffff;
+}
+
+/* ==============================
+   PAR COLOUR CODING
+   ============================== */
+
+/* UNDER PAR (birdie / eagle) */
+.scorecard-entry td.under-par {
+  background-color: #e8f1ff;
+}
+
+.scorecard-entry td.under-par input {
+  color: #1f4fd8;
+  font-weight: 700;
+}
+
+/* PAR */
+.scorecard-entry td.par {
+  background-color: #f7f7f7;
+}
+
+.scorecard-entry td.par input {
+  color: #333;
+  font-weight: 600;
+}
+
+/* OVER PAR (bogey+) */
+.scorecard-entry td.over-par {
+  background-color: #fdeaea;
+}
+
+.scorecard-entry td.over-par input {
+  color: #c62828;
+  font-weight: 700;
+}
+
+/* TOTAL CELL */
+.total-cell {
+  font-weight: 800;
+  background: #e6f4ee;
+  color: #1f7a4f;
+}
+
+/* ==============================
+   TOTALS BAR
+   ============================== */
+
+.totals {
   margin-top: 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.total span {
+.totals div {
+  background: #ffffff;
+  border-radius: 0.7rem;
+  padding: 0.8rem 1.2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 120px;
+}
+
+.totals span {
   display: block;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.8rem;
+  color: #555;
+  text-transform: uppercase;
 }
 
-.total strong {
-  font-size: 1.5rem;
+.totals strong {
+  font-size: 1.6rem;
+  color: #1f7a4f;
 }
 
-.submit-btn {
-  background: #2b5cff;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
+.grand-total strong {
+  font-size: 2rem;
+}
+
+/* ==============================
+   SUBMIT
+   ============================== */
+
+.submit-row {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.submit-row button {
+  padding: 0.7rem 1.6rem;
+  background-color: #1f7a4f;
+  color: #ffffff;
   font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.6rem;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.submit-btn:disabled {
-  opacity: 0.5;
+.submit-row button:hover:not(:disabled) {
+  background-color: #145a38;
+  transform: translateY(-1px);
+}
+
+.submit-row button:disabled {
+  background-color: #a8cbbb;
   cursor: not-allowed;
 }

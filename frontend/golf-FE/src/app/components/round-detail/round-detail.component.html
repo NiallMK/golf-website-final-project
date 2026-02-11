@@ -1,28 +1,59 @@
-<h2>Round Details</h2>
+<div class="round-details-page" *ngIf="round">
 
-<div *ngIf="round">
-  <p><strong>Course:</strong> {{ round.course }}</p>
-  <p><strong>Date:</strong> {{ round.date_played }}</p>
+  <!-- Round summary card -->
+  <div class="round-summary-card">
 
-  <p *ngIf="round.gross_score !== null">
-    <strong>Gross score:</strong> {{ round.gross_score }}
-  </p>
+    <div class="round-summary-header">
+      <h2>{{ round.course }}</h2>
 
-  <p *ngIf="round.gross_score === null">
-    <em>Round in progress</em><br />
-    <a [routerLink]="['/rounds', round.id, 'scores']">
-      Continue scoring
-    </a>
-  </p>
-</div>
+      <span
+        class="round-status completed"
+        *ngIf="round.gross_score !== null"
+      >
+        Completed
+      </span>
 
-<hr />
+      <span
+        class="round-status in-progress"
+        *ngIf="round.gross_score === null"
+      >
+        In Progress
+      </span>
+    </div>
 
-<div *ngIf="scores.length > 0">
-  <h3>Hole Scores</h3>
-  <ul>
-    <li *ngFor="let s of scores">
-      Hole {{ s.hole }} – {{ s.strokes }}
-    </li>
-  </ul>
+    <div class="round-meta">
+      <span>📅 {{ round.date_played }}</span>
+    </div>
+
+    <div class="round-score" *ngIf="round.gross_score !== null">
+      Gross Score
+      <span class="score-value">{{ round.gross_score }}</span>
+    </div>
+
+    <div class="round-continue" *ngIf="round.gross_score === null">
+      <p>Round in progress</p>
+      <a
+        class="continue-btn"
+        [routerLink]="['/rounds', round.id, 'scores']"
+      >
+        Continue Scoring
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Hole scores -->
+  <div class="scorecard" *ngIf="scores.length > 0">
+
+    <h3>⛳ Hole Scores</h3>
+
+    <div class="holes-grid">
+      <div class="hole-card" *ngFor="let s of scores">
+        <span class="hole-number">Hole {{ s.hole }}</span>
+        <span class="hole-score">{{ s.strokes }}</span>
+      </div>
+    </div>
+
+  </div>
+
 </div>

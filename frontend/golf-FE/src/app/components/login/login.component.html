@@ -1,0 +1,37 @@
+<div class="login-page">
+
+  <div class="login-card">
+
+    <h2>⛳ Login</h2>
+
+    <form (ngSubmit)="login()">
+
+      <div class="field">
+        <label>Email</label>
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+
+      <button type="submit">
+        Login
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

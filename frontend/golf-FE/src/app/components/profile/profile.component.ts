@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WebserviceService } from '../../services/webservice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -12,25 +13,41 @@ import { WebserviceService } from '../../services/webservice.service';
 export class ProfileComponent implements OnInit {
 
   profile: any;
-  user_id = 1; // TEMP
-
-  constructor(private ws: WebserviceService) {}
-  
   bookings: any[] = [];
 
+  constructor(
+    private ws: WebserviceService,
+    private router: Router
+  ) {}
+
   ngOnInit(): void {
-    this.ws.getUserProfile(this.user_id).subscribe({
+
+    // -----------------------------
+    // Load logged-in user's profile
+    // -----------------------------
+    this.ws.getUserProfile().subscribe({
       next: data => this.profile = data,
-      error: err => console.error(err)
+      error: err => {
+        console.error(err);
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
+      }
     });
 
-    this.ws.getUserBookings(this.user_id).subscribe({
+    // -----------------------------
+    // Load logged-in user's bookings
+    // -----------------------------
+    this.ws.getUserBookings().subscribe({
       next: data => this.bookings = data,
-      error: err => console.error(err)
+      error: err => {
+        console.error(err);
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
+      }
     });
 
   }
 
-
 }
-

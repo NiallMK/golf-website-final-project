@@ -1,0 +1,33 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <h2>Create Account</h2>
+
+    <form (ngSubmit)="register()">
+
+      <div class="field">
+        <label>Name</label>
+        <input [(ngModel)]="name" name="name" required />
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" required />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" name="password" required />
+      </div>
+
+      <button type="submit">Register</button>
+
+    </form>
+
+    <p class="switch">
+      Already have an account?
+      <a routerLink="/login">Login</a>
+    </p>
+
+  </div>
+</div>

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WebserviceService } from '../../services/webservice.service';
 import { Router } from '@angular/router';
+import { WebserviceService } from '../../services/webservice.service';
 
 @Component({
-  selector: 'app-manual-round',
+  selector: 'app-record-round',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './record-round.component.html',
@@ -13,62 +13,82 @@ import { Router } from '@angular/router';
 })
 export class RecordRoundComponent implements OnInit {
 
+  // All courses from API
   courses: any[] = [];
-  course_id: number | null = null;
-  date_played: string = '';
 
-  // TEMP: simulated logged-in user
-  user_id = 1;
+  // Search + selection state
+  courseSearch = '';
+  filteredCourses: any[] = [];
+  selectedCourse: any = null;
 
-  constructor(private webService: WebserviceService, private router: Router) {}
+  // Form data
+  course_id!: number;
+  date_played = '';
+
+  constructor(
+    private ws: WebserviceService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.webService.getCourses().subscribe({
-      next: (data) => this.courses = data,
-      error: (err) => console.error(err)
+    this.ws.getCourses().subscribe({
+      next: data => this.courses = data,
+      error: err => console.error(err)
     });
   }
 
-  submitRound() {
-    if (!this.course_id || !this.date_played) {
-      alert('Please select a course and date');
-      return;
-    }
-    
-    this.webService.createManualRound({
-      user_id: this.user_id,
-      course_id: this.course_id,
-      date_played: this.date_played
-    }).subscribe({
-      next: (res: any) => {
-        alert('Round created successfully');
-        this.router.navigate([`/rounds/${res.round_id}/scores`]);
-      },
-      error: () => alert('Failed to create round')
-    });
+  // -------------------------
+  // Filter courses as user types
+  // -------------------------
+  filterCourses(): void {
+    const query = this.courseSearch.toLowerCase().trim();
 
-  }
-
-  courseSearch: string = '';
-  filteredCourses: any[] = [];
-
-  filterCourses() {
-    if (!this.courseSearch) {
+    if (!query) {
       this.filteredCourses = [];
       return;
     }
 
-    const search = this.courseSearch.toLowerCase();
-
-    this.filteredCourses = this.courses
-      .filter(c => c.name.toLowerCase().includes(search))
-      .slice(0, 6); // limit suggestions
+    this.filteredCourses = this.courses.filter(c =>
+      c.name.toLowerCase().includes(query)
+    );
   }
 
-  selectCourse(course: any) {
+  // -------------------------
+  // Select a course from suggestions
+  // -------------------------
+  selectCourse(course: any): void {
+    this.selectedCourse = course;
     this.course_id = course.id;
     this.courseSearch = course.name;
     this.filteredCourses = [];
+  }
+
+  // -------------------------
+  // Submit round
+  // -------------------------
+  submitRound(): void {
+
+    if (!this.course_id || !this.date_played) {
+      alert('Please select course and date');
+      return;
+    }
+
+    this.ws.createManualRound({
+      course_id: this.course_id,
+      date_played: this.date_played
+    }).subscribe({
+      next: (res: any) => {
+
+        const roundId = res.round_id;
+        this.router.navigate(['/rounds', roundId, 'scores']);
+
+      },
+      error: err => {
+        console.error(err);
+        alert('Failed to create round');
+      }
+    });
+
   }
 
 }

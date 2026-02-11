@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { WebserviceService } from '../../services/webservice.service';
 
 @Component({
@@ -16,11 +17,12 @@ export class BookTeeTimeComponent implements OnInit {
   teeTimes: any[] = [];
 
   course_id: number | null = null;
-  date: string = '';
+  date = '';
 
-  user_id = 1; // TEMP until auth
-
-  constructor(private ws: WebserviceService) {}
+  constructor(
+    private ws: WebserviceService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.ws.getCourses().subscribe({
@@ -28,7 +30,7 @@ export class BookTeeTimeComponent implements OnInit {
     });
   }
 
-  loadTeeTimes() {
+  loadTeeTimes(): void {
     if (!this.course_id || !this.date) return;
 
     this.ws.getAvailableTeeTimes(this.course_id, this.date).subscribe({
@@ -37,13 +39,20 @@ export class BookTeeTimeComponent implements OnInit {
     });
   }
 
-  book(teeTimeId: number) {
-    this.ws.bookTeeTime(this.user_id, teeTimeId).subscribe({
+  book(teeTimeId: number): void {
+    this.ws.bookTeeTime(teeTimeId).subscribe({
       next: () => {
         alert('Tee time booked successfully');
         this.teeTimes = this.teeTimes.filter(t => t.id !== teeTimeId);
       },
-      error: () => alert('Failed to book tee time')
+      error: err => {
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        } else {
+          alert('Failed to book tee time');
+        }
+      }
     });
   }
+
 }

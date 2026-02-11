@@ -1,5 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from db import get_db
+from .auth_utils import login_required
+
 
 rounds_bp = Blueprint("rounds", __name__)
 
@@ -7,6 +9,7 @@ rounds_bp = Blueprint("rounds", __name__)
 # CREATE ROUND FROM BOOKING
 # -------------------------------------------------
 @rounds_bp.route("/rounds", methods=["POST"])
+@login_required
 def create_round():
     data = request.get_json()
     booking_id = data.get("booking_id")
@@ -14,27 +17,28 @@ def create_round():
     if not booking_id:
         return jsonify({"error": "booking_id is required"}), 400
 
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cur = db.cursor()
 
-        # Get booking, user, course, and tee time
+        # Get booking (must belong to logged-in user)
         cur.execute("""
-            SELECT b.user_id, t.course_id, t.id AS teetime_id
+            SELECT t.course_id, t.id AS teetime_id
             FROM bookings b
             JOIN tee_times t ON t.id = b.teetime_id
-            WHERE b.id = ?
-        """, (booking_id,))
-        row = cur.fetchone()
+            WHERE b.id = ? AND b.user_id = ?
+        """, (booking_id, user_id))
 
+        row = cur.fetchone()
         if not row:
             return jsonify({"error": "Booking not found"}), 404
 
-        user_id = row["user_id"]
         course_id = row["course_id"]
         teetime_id = row["teetime_id"]
 
-        # Get current handicap snapshot
+        # Handicap snapshot
         cur.execute(
             "SELECT current_handicap FROM users WHERE id = ?",
             (user_id,)
@@ -42,7 +46,6 @@ def create_round():
         h = cur.fetchone()
         handicap = h["current_handicap"] if h else None
 
-        cur.execute("BEGIN")
         cur.execute("""
             INSERT INTO rounds (
                 user_id,
@@ -54,11 +57,10 @@ def create_round():
             VALUES (?, ?, ?, date('now'), ?)
         """, (user_id, course_id, teetime_id, handicap))
 
-        round_id = cur.lastrowid
         db.commit()
 
         return jsonify({
-            "round_id": round_id,
+            "round_id": cur.lastrowid,
             "type": "booked"
         }), 201
 
@@ -69,28 +71,27 @@ def create_round():
     finally:
         db.close()
 
-
 # -------------------------------------------------
 # CREATE MANUAL ROUND (NO BOOKING)
 # -------------------------------------------------
 @rounds_bp.route("/rounds/manual", methods=["POST"])
+@login_required
 def create_manual_round():
     data = request.get_json()
 
-    user_id = data.get("user_id")
+    user_id = session["user_id"]
     course_id = data.get("course_id")
     date_played = data.get("date_played")
 
-    if not user_id or not course_id or not date_played:
+    if not course_id or not date_played:
         return jsonify({
-            "error": "user_id, course_id, and date_played are required"
+            "error": "course_id and date_played are required"
         }), 400
 
     db = get_db()
     try:
         cur = db.cursor()
 
-        # Get current handicap snapshot
         cur.execute(
             "SELECT current_handicap FROM users WHERE id = ?",
             (user_id,)
@@ -108,11 +109,10 @@ def create_manual_round():
             VALUES (?, ?, ?, ?)
         """, (user_id, course_id, date_played, handicap))
 
-        round_id = cur.lastrowid
         db.commit()
 
         return jsonify({
-            "round_id": round_id,
+            "round_id": cur.lastrowid,
             "type": "manual"
         }), 201
 
@@ -123,12 +123,13 @@ def create_manual_round():
     finally:
         db.close()
 
-
 # -------------------------------------------------
 # SUBMIT HOLE SCORES FOR A ROUND
 # -------------------------------------------------
 @rounds_bp.route("/rounds/<int:round_id>/scores", methods=["POST"])
+@login_required
 def submit_scores(round_id):
+    user_id = session["user_id"]
     data = request.get_json()
     scores = data.get("scores")
 
@@ -139,48 +140,29 @@ def submit_scores(round_id):
     try:
         cur = db.cursor()
 
-        # -------------------------------
-        # Ensure round exists + not completed
-        # -------------------------------
-        cur.execute(
-            "SELECT id, is_completed FROM rounds WHERE id = ?",
-            (round_id,)
-        )
-        r = cur.fetchone()
+        cur.execute("""
+            SELECT id, is_completed
+            FROM rounds
+            WHERE id = ? AND user_id = ?
+        """, (round_id, user_id))
 
+        r = cur.fetchone()
         if not r:
             return jsonify({"error": "Round not found"}), 404
 
         if r["is_completed"] == 1:
-            return jsonify({
-                "error": "Scores already submitted for this round"
-            }), 409
-
-        # -------------------------------
-        # Begin transaction
-        # -------------------------------
-        cur.execute("BEGIN")
+            return jsonify({"error": "Scores already submitted"}), 409
 
         total = 0
+        cur.execute("BEGIN")
+
         for s in scores:
-            hole_id = s.get("hole_id")
-            strokes = s.get("strokes")
-
-            if hole_id is None or strokes is None:
-                return jsonify({
-                    "error": "Each score needs hole_id and strokes"
-                }), 400
-
             cur.execute("""
                 INSERT INTO hole_scores (round_id, hole_id, strokes)
                 VALUES (?, ?, ?)
-            """, (round_id, hole_id, strokes))
+            """, (round_id, s["hole_id"], s["strokes"]))
+            total += s["strokes"]
 
-            total += strokes
-
-        # -------------------------------
-        # Update gross score + lock round
-        # -------------------------------
         cur.execute("""
             UPDATE rounds
             SET gross_score = ?, is_completed = 1
@@ -191,8 +173,7 @@ def submit_scores(round_id):
 
         return jsonify({
             "round_id": round_id,
-            "gross_score": total,
-            "status": "completed"
+            "gross_score": total
         }), 201
 
     except Exception as e:
@@ -203,12 +184,14 @@ def submit_scores(round_id):
         db.close()
 
 
-
 # -------------------------------------------------
 # GET ROUND DETAILS + SCORES
 # -------------------------------------------------
 @rounds_bp.route("/rounds/<int:round_id>", methods=["GET"])
+@login_required
 def get_round(round_id):
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cur = db.cursor()
@@ -222,10 +205,10 @@ def get_round(round_id):
                    c.name AS course
             FROM rounds r
             JOIN courses c ON c.id = r.course_id
-            WHERE r.id = ?
-        """, (round_id,))
-        r = cur.fetchone()
+            WHERE r.id = ? AND r.user_id = ?
+        """, (round_id, user_id))
 
+        r = cur.fetchone()
         if not r:
             return jsonify({"error": "Round not found"}), 404
 
@@ -236,17 +219,10 @@ def get_round(round_id):
             WHERE hs.round_id = ?
             ORDER BY h.hole_number
         """, (round_id,))
-        holes = [
-            {
-                "hole": row["hole_number"],
-                "strokes": row["strokes"]
-            }
-            for row in cur.fetchall()
-        ]
 
         return jsonify({
             "round": dict(r),
-            "scores": holes
+            "scores": [dict(row) for row in cur.fetchall()]
         }), 200
 
     finally:
@@ -257,8 +233,11 @@ def get_round(round_id):
 # GET A USERS ROUND HISTORY
 # -------------------------------------------------
 
-@rounds_bp.route("/rounds/user/<int:user_id>", methods=["GET"])
-def get_user_rounds(user_id):
+@rounds_bp.route("/rounds", methods=["GET"])
+@login_required
+def get_user_rounds():
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cur = db.cursor()
@@ -276,8 +255,8 @@ def get_user_rounds(user_id):
             ORDER BY r.date_played DESC
         """, (user_id,))
 
-        rounds = [dict(row) for row in cur.fetchall()]
-        return jsonify(rounds), 200
+        return jsonify([dict(row) for row in cur.fetchall()]), 200
 
     finally:
         db.close()
+

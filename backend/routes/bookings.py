@@ -1,6 +1,6 @@
-# routes/bookings.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from db import get_db
+from .auth_utils import login_required
 
 bookings_bp = Blueprint("bookings", __name__)
 
@@ -8,22 +8,24 @@ bookings_bp = Blueprint("bookings", __name__)
 # CREATE BOOKING (POST)
 # -------------------------
 @bookings_bp.route("/bookings", methods=["POST"])
+@login_required
 def book_teetime():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "Request body must be JSON"}), 400
 
-    user_id = data.get("user_id")
     teetime_id = data.get("teetime_id")
+    user_id = session["user_id"]
 
-    if not user_id or not teetime_id:
-        return jsonify({"error": "user_id and teetime_id are required"}), 400
+    if not teetime_id:
+        return jsonify({"error": "teetime_id is required"}), 400
 
     db = get_db()
     try:
         cursor = db.cursor()
 
+        # Check tee time exists and is free
         cursor.execute(
             "SELECT is_booked FROM tee_times WHERE id = ?",
             (teetime_id,)
@@ -38,11 +40,13 @@ def book_teetime():
 
         cursor.execute("BEGIN")
 
+        # Create booking
         cursor.execute(
             "INSERT INTO bookings (user_id, teetime_id) VALUES (?, ?)",
             (user_id, teetime_id)
         )
 
+        # Lock tee time
         cursor.execute(
             "UPDATE tee_times SET is_booked = 1 WHERE id = ?",
             (teetime_id,)
@@ -64,16 +68,21 @@ def book_teetime():
 # CANCEL BOOKING (DELETE)
 # -------------------------
 @bookings_bp.route("/bookings/<int:booking_id>", methods=["DELETE"])
+@login_required
 def cancel_booking(booking_id):
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cursor = db.cursor()
 
-        # 1. Find booking
-        cursor.execute(
-            "SELECT teetime_id FROM bookings WHERE id = ?",
-            (booking_id,)
-        )
+        # Booking must belong to logged-in user
+        cursor.execute("""
+            SELECT teetime_id
+            FROM bookings
+            WHERE id = ? AND user_id = ?
+        """, (booking_id, user_id))
+
         booking = cursor.fetchone()
 
         if booking is None:
@@ -81,16 +90,15 @@ def cancel_booking(booking_id):
 
         teetime_id = booking["teetime_id"]
 
-        # 2. Begin transaction
         cursor.execute("BEGIN")
 
-        # 3. Delete booking
+        # Delete booking
         cursor.execute(
             "DELETE FROM bookings WHERE id = ?",
             (booking_id,)
         )
 
-        # 4. Free tee time
+        # Free tee time
         cursor.execute(
             "UPDATE tee_times SET is_booked = 0 WHERE id = ?",
             (teetime_id,)
@@ -107,8 +115,9 @@ def cancel_booking(booking_id):
     finally:
         db.close()
 
+
 # -------------------------
-# GET AVAILABLE TEE TIMES
+# GET AVAILABLE TEE TIMES (PUBLIC)
 # -------------------------
 @bookings_bp.route("/teetimes/available", methods=["GET"])
 def get_available_teetimes():
@@ -131,18 +140,20 @@ def get_available_teetimes():
             ORDER BY time
         """, (course_id, date))
 
-        teetimes = [dict(row) for row in cur.fetchall()]
-        return jsonify(teetimes), 200
+        return jsonify([dict(row) for row in cur.fetchall()]), 200
 
     finally:
         db.close()
 
-#------------------------
-# GET USER BOOKING HISTORY
-#------------------------
 
-@bookings_bp.route("/bookings/user/<int:user_id>", methods=["GET"])
-def get_user_bookings(user_id):
+# -------------------------
+# GET LOGGED-IN USER BOOKINGS
+# -------------------------
+@bookings_bp.route("/bookings", methods=["GET"])
+@login_required
+def get_user_bookings():
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cur = db.cursor()
@@ -152,8 +163,7 @@ def get_user_bookings(user_id):
                 b.id,
                 t.date,
                 t.time,
-                c.name AS course_name,
-                t.is_booked
+                c.name AS course_name
             FROM bookings b
             JOIN tee_times t ON b.teetime_id = t.id
             JOIN courses c ON t.course_id = c.id
@@ -161,10 +171,7 @@ def get_user_bookings(user_id):
             ORDER BY t.date DESC, t.time DESC
         """, (user_id,))
 
-        bookings = [dict(row) for row in cur.fetchall()]
-        return jsonify(bookings), 200
+        return jsonify([dict(row) for row in cur.fetchall()]), 200
 
     finally:
         db.close()
-
-

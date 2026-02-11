@@ -1,32 +1,96 @@
-<h2>Enter Scores</h2>
+<div class="enter-scores-page">
 
-<p *ngIf="holes.length === 0">Loading holes...</p>
+  <h2 class="page-title">⛳ Enter Scores</h2>
 
-<form *ngIf="holes.length > 0" (ngSubmit)="submitScores()">
+  <p *ngIf="holes.length === 0" class="loading">
+    Loading holes…
+  </p>
 
-  <div *ngFor="let h of holes; let i = index" class="hole-row">
-    <label>
-      Hole {{ h.hole_number }} (Par {{ h.par }}):
-      <input
-        type="number"
-        min="1"
-        [(ngModel)]="scores[i]"
-        name="score{{ i }}"
-        required
-      />
-    </label>
-  </div>
+  <form *ngIf="holes.length > 0" (ngSubmit)="submitScores()">
 
-  <hr />
+    <div class="scorecard-wrapper">
 
-  <p><strong>Front 9:</strong> {{ frontNineTotal }}</p>
-  <p><strong>Back 9:</strong> {{ backNineTotal }}</p>
-  <p><strong>Total:</strong> {{ totalScore }}</p>
+      <table class="scorecard-entry">
+        <thead>
+          <tr>
+            <th>Hole</th>
+            <th *ngFor="let h of holes">
+              {{ h.hole_number }}
+            </th>
+            <th>Total</th>
+          </tr>
+        </thead>
 
-  <br />
+        <tbody>
 
-  <button type="submit" [disabled]="!allScoresEntered">
-    Submit Scores
-  </button>
+          <!-- PAR ROW -->
+          <tr class="par-row">
+            <td>Par</td>
+            <td *ngFor="let h of holes">
+              {{ h.par }}
+            </td>
+            <td></td>
+          </tr>
 
-</form>
+          <!-- SCORE ENTRY ROW -->
+          <tr class="score-row">
+            <td>Strokes</td>
+
+            <td
+              *ngFor="let h of holes; let i = index"
+              [ngClass]="{
+                'under-par': scores[i] !== null && scores[i]! < h.par,
+                'par': scores[i] !== null && scores[i]! === h.par,
+                'over-par': scores[i] !== null && scores[i]! > h.par
+              }"
+            >
+              <input
+                type="number"
+                min="1"
+                [(ngModel)]="scores[i]"
+                name="score{{ i }}"
+                required
+              />
+            </td>
+
+            <td class="total-cell">
+              {{ totalScore }}
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- TOTALS -->
+    <div class="totals">
+      <div>
+        <span>Front 9</span>
+        <strong>{{ frontNineTotal }}</strong>
+      </div>
+
+      <div>
+        <span>Back 9</span>
+        <strong>{{ backNineTotal }}</strong>
+      </div>
+
+      <div class="grand-total">
+        <span>Total</span>
+        <strong>{{ totalScore }}</strong>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-row">
+      <button
+        type="submit"
+        [disabled]="!allScoresEntered"
+      >
+        Submit Scorecard
+      </button>
+    </div>
+
+  </form>
+
+</div>

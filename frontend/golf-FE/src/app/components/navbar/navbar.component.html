@@ -1,8 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-dark golf-navbar">
   <div class="container-fluid">
 
+    <!-- Brand -->
     <a class="navbar-brand" routerLink="/">⛳ GolfTracker</a>
 
+    <!-- Mobile toggle -->
     <button
       class="navbar-toggler"
       type="button"
@@ -13,26 +15,74 @@
     </button>
 
     <div class="collapse navbar-collapse" id="golfNavbar">
+
+      <!-- Left links -->
       <ul class="navbar-nav me-auto">
 
+        <!-- Always visible -->
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a
+            class="nav-link"
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
             Home
           </a>
         </li>
 
-        <li class="nav-item"><a class="nav-link" routerLink="/courses">Courses</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/book">Book</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/rounds/new">Record Round</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/rounds">My Rounds</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/profile">Profile</a></li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/courses">Courses</a>
+        </li>
+
+        <!-- Logged-in only -->
+        <ng-container *ngIf="user">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/book">Book</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/rounds/new">Record Round</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/rounds">My Rounds</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/profile">Profile</a>
+          </li>
+        </ng-container>
+
+        <!-- Logged-out only -->
+        <ng-container *ngIf="!user">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">Login</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/register">Register</a>
+          </li>
+        </ng-container>
 
       </ul>
 
-      <div *ngIf="user" class="navbar-text handicap-badge">
-        Handicap <span class="badge">{{ user.current_handicap }}</span>
-      </div>
-    </div>
+      <!-- Right side (logged-in only) -->
+      <div *ngIf="user" class="d-flex align-items-center gap-3">
 
+        <div class="navbar-text handicap-badge">
+          Handicap
+          <span class="badge bg-light text-dark">
+            {{ user.current_handicap ?? '—' }}
+          </span>
+        </div>
+
+        <button class="btn btn-outline-light btn-sm" (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    </div>
   </div>
 </nav>

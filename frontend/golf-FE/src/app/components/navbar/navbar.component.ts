@@ -1,33 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { WebserviceService } from '../../services/webservice.service';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  templateUrl: './navbar.component.html',
   imports: [CommonModule, RouterModule],
+  templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
 
-  user: any;
+  constructor(
+    public auth: AuthService,
+    private router: Router
+  ) {}
 
-  constructor(private ws: WebserviceService) {}
-
-  ngOnInit(): void {
-    this.ws.getUser(1).subscribe({
-      next: (data) => {
-        console.log('USER DATA:', data);
-        this.user = data;
-      },
-      error: (err) => {
-        console.error('USER ERROR:', err);
-      }
-    });
+  get user() {
+    return this.auth.currentUser;
   }
 
+  logout() {
+    this.auth.logout().subscribe(() => {
+      this.auth.clearUser();
+      this.router.navigate(['/login']);
+    });
+  }
 }
-
-

@@ -7,12 +7,12 @@ import { Observable } from 'rxjs';
 })
 export class WebserviceService {
 
-  private BASE_URL = 'http://127.0.0.1:5001/api';
+  private BASE_URL = 'http://localhost:5001/api';
 
   constructor(private http: HttpClient) {}
 
   // --------------------
-  // COURSES
+  // COURSES (PUBLIC)
   // --------------------
   getCourses(): Observable<any[]> {
     return this.http.get<any[]>(`${this.BASE_URL}/courses`);
@@ -22,84 +22,96 @@ export class WebserviceService {
     return this.http.get<any>(`${this.BASE_URL}/courses/${id}`);
   }
 
+  getCourseHoles(courseId: number) {
+    return this.http.get<any[]>(
+      `${this.BASE_URL}/courses/${courseId}/holes`
+    );
+  }
+
+  // --------------------
+  // ROUNDS (AUTH)
+  // --------------------
   getRound(roundId: number) {
     return this.http.get<any>(
-      `http://127.0.0.1:5001/api/rounds/${roundId}`
+      `${this.BASE_URL}/rounds/${roundId}`,
+      { withCredentials: true }
     );
   }
 
   createManualRound(data: {
-    user_id: number;
     course_id: number;
     date_played: string;
   }) {
     return this.http.post(
-      'http://127.0.0.1:5001/api/rounds/manual',
-      data
-    );
-  }
-
-  getCourseHoles(courseId: number) {
-    return this.http.get<any[]>(
-      `http://127.0.0.1:5001/api/courses/${courseId}/holes`
+      `${this.BASE_URL}/rounds/manual`,
+      data,
+      { withCredentials: true }
     );
   }
 
   submitScores(roundId: number, scores: any[]) {
     return this.http.post(
-      `http://127.0.0.1:5001/api/rounds/${roundId}/scores`,
-      { scores }
+      `${this.BASE_URL}/rounds/${roundId}/scores`,
+      { scores },
+      { withCredentials: true }
     );
   }
 
-  getUser(userId: number) {
-    return this.http.get<any>(
-      `http://127.0.0.1:5001/api/users/${userId}`
-    );
-  }
-
-  getUserRounds(userId: number) {
+  getUserRounds() {
     return this.http.get<any[]>(
-      `http://127.0.0.1:5001/api/rounds/user/${userId}`
+      `${this.BASE_URL}/rounds`,
+      { withCredentials: true }
     );
   }
 
-  getUserProfile(userId: number) {
+  // --------------------
+  // USER / PROFILE (AUTH)
+  // --------------------
+  getUserProfile() {
     return this.http.get<any>(
-      `http://127.0.0.1:5001/api/users/${userId}/profile`
+      `${this.BASE_URL}/users/profile`,
+      { withCredentials: true }
     );
   }
 
-  getHandicapHistory(userId: number) {
+
+  getHandicapHistory() {
     return this.http.get<any[]>(
-      `http://127.0.0.1:5001/api/handicap/history/${userId}`
+      `${this.BASE_URL}/handicap/history`,
+      { withCredentials: true }
     );
   }
 
+  // --------------------
+  // BOOKINGS
+  // --------------------
   getAvailableTeeTimes(courseId: number, date: string) {
     return this.http.get<any[]>(
-      `http://127.0.0.1:5001/api/teetimes/available?course_id=${courseId}&date=${date}`
+      `${this.BASE_URL}/teetimes/available?course_id=${courseId}&date=${date}`
     );
   }
 
-  bookTeeTime(userId: number, teeTimeId: number) {
+  bookTeeTime(teeTimeId: number) {
     return this.http.post(
-      'http://127.0.0.1:5001/api/bookings',
-      {
-        user_id: userId,
-        teetime_id: teeTimeId
-      }
+      `${this.BASE_URL}/bookings`,
+      { teetime_id: teeTimeId },
+      { withCredentials: true }
     );
   }
 
-  getUserBookings(userId: number) {
+  getUserBookings() {
     return this.http.get<any[]>(
-      `http://127.0.0.1:5001/api/bookings/user/${userId}`
+      `${this.BASE_URL}/bookings`,
+      { withCredentials: true }
     );
   }
 
 
-
-
+  cancelBooking(bookingId: number) {
+    return this.http.delete(
+      `${this.BASE_URL}/bookings/${bookingId}`,
+      { withCredentials: true }
+    );
+  }
 
 }

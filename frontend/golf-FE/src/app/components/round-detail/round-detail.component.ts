@@ -7,7 +7,8 @@ import { WebserviceService } from '../../services/webservice.service';
   selector: 'app-round-detail',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './round-detail.component.html'
+  templateUrl: './round-detail.component.html',
+  styleUrls: ['./round-detail.component.css']
 })
 export class RoundDetailComponent implements OnInit {
 

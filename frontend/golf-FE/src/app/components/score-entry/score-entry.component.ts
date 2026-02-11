@@ -8,7 +8,8 @@ import { WebserviceService } from '../../services/webservice.service';
   selector: 'app-score-entry',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './score-entry.component.html'
+  templateUrl: './score-entry.component.html',
+  styleUrls: ['./score-entry.component.css']
 })
 export class ScoreEntryComponent implements OnInit {
 
