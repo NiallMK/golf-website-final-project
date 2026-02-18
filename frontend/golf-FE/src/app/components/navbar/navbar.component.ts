@@ -17,14 +17,10 @@ export class NavbarComponent {
     private router: Router
   ) {}
 
-  get user() {
-    return this.auth.currentUser;
-  }
+  get user() { return this.auth.currentUser; }
 
   logout() {
-    this.auth.logout().subscribe(() => {
-      this.auth.clearUser();
-      this.router.navigate(['/login']);
-    });
+    this.auth.clearUser();
+    this.router.navigate(['/login']);
   }
 }

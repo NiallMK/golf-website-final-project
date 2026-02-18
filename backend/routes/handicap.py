@@ -1,16 +1,21 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, session
 from db import get_db
+from .auth_utils import login_required
 
 handicap_bp = Blueprint("handicap", __name__)
 
-@handicap_bp.route("/handicap/recalculate/<int:user_id>", methods=["POST"])
-def recalculate_handicap(user_id):
+
+@handicap_bp.route("/handicap/recalculate", methods=["POST"])
+@login_required
+def recalculate_handicap():
+    user_id = session["user_id"]
+
     db = get_db()
     try:
         cur = db.cursor()
 
         # --------------------------------
-        # Get completed rounds for user
+        # Get last 5 completed rounds
         # --------------------------------
         cur.execute("""
             SELECT r.gross_score, c.par
@@ -34,16 +39,18 @@ def recalculate_handicap(user_id):
         # --------------------------------
         # Calculate differentials
         # --------------------------------
-        differentials = []
-        for r in rounds:
-            diff = r["gross_score"] - r["par"]
-            differentials.append(diff)
+        differentials = [
+            r["gross_score"] - r["par"]
+            for r in rounds
+        ]
 
-        # Average of differentials
-        new_handicap = round(sum(differentials) / len(differentials), 1)
+        new_handicap = round(
+            sum(differentials) / len(differentials),
+            1
+        )
 
         # --------------------------------
-        # Update user handicap
+        # Update user
         # --------------------------------
         cur.execute("""
             UPDATE users
@@ -51,10 +58,15 @@ def recalculate_handicap(user_id):
             WHERE id = ?
         """, (new_handicap, user_id))
 
+        # Insert into history
+        cur.execute("""
+            INSERT INTO handicap_history (user_id, handicap)
+            VALUES (?, ?)
+        """, (user_id, new_handicap))
+
         db.commit()
 
         return jsonify({
-            "user_id": user_id,
             "new_handicap": new_handicap,
             "rounds_used": len(differentials)
         }), 200
@@ -65,6 +77,3 @@ def recalculate_handicap(user_id):
 
     finally:
         db.close()
-
-
-

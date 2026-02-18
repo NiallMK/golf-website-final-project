@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { WebserviceService} from '../../services/webservice.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './courses.component.html'
 })
 export class CoursesComponent implements OnInit {

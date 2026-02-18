@@ -1,0 +1,61 @@
+<div *ngIf="course" class="course-page">
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>{{ course.name }}</h1>
+        <p class="location">📍 {{ course.location }}</p>
+    </div>
+
+    <!-- STATS SECTION -->
+    <div class="stats-container">
+
+        <div class="stat-card">
+        <h3>Par</h3>
+        <p>{{ course.par }}</p>
+        </div>
+
+        <div class="stat-card">
+        <h3>Course Rating</h3>
+        <p>{{ course.course_rating }}</p>
+        </div>
+
+        <div class="stat-card">
+        <h3>Slope Rating</h3>
+        <p>{{ course.slope_rating }}</p>
+        </div>
+
+    </div>
+
+    <!-- Difficulty Indicator -->
+    <div class="difficulty">
+        <h3>Difficulty Level</h3>
+        <div class="difficulty-bar">
+        <div
+            class="difficulty-fill"
+            [style.width.%]="course.slope_rating - 55">
+        </div>
+        </div>
+        <small>Based on slope rating</small>
+    </div>
+
+    <div class="image-scroller" *ngIf="images.length > 0">
+        <img
+            *ngFor="let img of images"
+            [src]="img"
+            (click)="openImage(img)"
+        />
+    </div>
+
+    <!-- FULLSCREEN MODE-->
+    <div class="image-modal" *ngIf="selectedImage" (click)="closeImage()">
+        <img [src]="selectedImage" (click)="$event.stopPropagation()" />
+        <span class="close-btn" (click)="closeImage()">✕</span>
+    </div>
+
+
+
+
+
+
+
+</div>

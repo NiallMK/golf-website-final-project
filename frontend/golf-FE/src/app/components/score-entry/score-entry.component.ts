@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WebserviceService } from '../../services/webservice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-score-entry',
@@ -21,7 +22,8 @@ export class ScoreEntryComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private webService: WebserviceService
+    private webService: WebserviceService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -93,12 +95,26 @@ export class ScoreEntryComponent implements OnInit {
 
     this.webService.submitScores(this.roundId, payload).subscribe({
       next: () => {
-        alert('Scores submitted successfully!');
+
+        // 🔥 Recalculate handicap
+        this.webService.recalculateHandicap().subscribe({
+          next: () => {
+            // Navigate after recalculation
+            this.router.navigate(['/rounds']);
+          },
+          error: err => {
+            console.error('Handicap recalculation failed', err);
+            this.router.navigate(['/rounds']);
+          }
+        });
+
       },
       error: err => {
         console.error('Failed to submit scores', err);
         alert('Failed to submit scores');
       }
     });
+
   }
+
 }

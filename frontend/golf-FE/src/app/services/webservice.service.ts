@@ -74,6 +74,14 @@ export class WebserviceService {
     );
   }
 
+  recalculateHandicap() {
+    return this.http.post(
+      `${this.BASE_URL}/handicap/recalculate`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
 
   getHandicapHistory() {
     return this.http.get<any[]>(

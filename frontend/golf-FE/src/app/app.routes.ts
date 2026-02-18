@@ -10,6 +10,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { BookTeeTimeComponent } from './components/book-tee-time/book-tee-time.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { CourseComponent } from './components/course/course.component';
 
 import { AuthGuard } from './guards/auth.guard';
 
@@ -20,6 +21,7 @@ export const routes: Routes = [
   // --------------------
   { path: '', component: HomeComponent },
   { path: 'courses', component: CoursesComponent },
+  { path: 'courses/:id', component: CourseComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 

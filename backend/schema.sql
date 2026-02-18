@@ -92,3 +92,6 @@ CREATE TABLE handicap_history (
 ALTER TABLE rounds
 ADD COLUMN is_completed INTEGER DEFAULT 0;
 
+ALTER TABLE courses
+ADD COLUMN image_url TEXT;
+
