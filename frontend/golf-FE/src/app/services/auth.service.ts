@@ -12,6 +12,10 @@ export class AuthService {
   private userSubject = new BehaviorSubject<any | null>(null);
   user$ = this.userSubject.asObservable();
 
+  private authReadySubject = new BehaviorSubject<boolean>(false);
+  authReady$ = this.authReadySubject.asObservable();
+
+
   constructor(private http: HttpClient) {}
 
   register(name: string, email: string, password: string) {
@@ -39,14 +43,21 @@ export class AuthService {
   }
 
   loadUser() {
-    return this.http.get<any>(
+    this.http.get<any>(
       `${this.BASE_URL}/auth/me`,
       { withCredentials: true }
     ).subscribe({
-      next: res => this.setUser(res.user),
-      error: () => this.clearUser()
+      next: res => {
+        this.setUser(res.user);
+        this.authReadySubject.next(true);
+      },
+      error: () => {
+        this.clearUser();
+        this.authReadySubject.next(true);
+      }
     });
   }
+
 
 
 

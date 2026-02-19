@@ -85,7 +85,7 @@ def login():
     })
 
 #who is using this website right now?
-@auth_bp.route("/me", methods=["GET"])
+@auth_bp.route("/auth/me", methods=["GET"])
 def me():
     if "user_id" not in session:
         return jsonify({"user": None}), 401

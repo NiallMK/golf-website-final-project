@@ -53,7 +53,7 @@ def get_course(course_id):
 
         cur.execute("""
             SELECT id, name, location, par,
-                   course_rating, slope_rating, image_url
+                   course_rating, slope_rating, image_url, latitude, longitude
             FROM courses
             WHERE id = ?
         """, (course_id,))
@@ -73,7 +73,9 @@ def get_course(course_id):
             "par": row["par"],
             "course_rating": row["course_rating"],
             "slope_rating": row["slope_rating"],
-            "images": images
+            "images": images,
+            "latitude": row["latitude"],
+            "longitude": row["longitude"]
         }), 200
 
     finally:
@@ -109,37 +111,35 @@ def get_course_holes(course_id):
 # LEADERBOARD FOR EACH COURSE
 #-------------------------------------------------------------------
 
-@courses_bp.route("/leaderboard/courses", methods=["GET"])
-def course_leaderboard():
+@courses_bp.route("/leaderboard/course/<int:course_id>", methods=["GET"])
+def course_leaderboard(course_id):
     db = get_db()
-    cur = db.cursor() 
+    cur = db.cursor()
 
     cur.execute("""
-        SELECT c.name AS course_name,
-               u.name AS player_name,
+        SELECT u.name AS player_name,
                MIN(rt.total_score) AS best_score
         FROM (
             SELECT r.id,
                    r.course_id,
                    r.user_id,
-                   SUM(s.strokes) AS total_score
+                   SUM(hs.strokes) AS total_score
             FROM rounds r
-            JOIN hole_scores s ON r.id = s.round_id
+            JOIN hole_scores hs ON r.id = hs.round_id
+            WHERE r.course_id = ?
             GROUP BY r.id
         ) rt
-        JOIN courses c ON rt.course_id = c.id
         JOIN users u ON rt.user_id = u.id
-        GROUP BY rt.course_id
-    """)
+        GROUP BY rt.user_id
+        ORDER BY best_score ASC
+    """, (course_id,))
 
     rows = cur.fetchall()
 
     return jsonify([
         {
-            "course": row["course_name"],
             "player": row["player_name"],
             "score": row["best_score"]
         }
         for row in rows
     ])
-

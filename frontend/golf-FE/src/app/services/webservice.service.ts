@@ -64,11 +64,12 @@ export class WebserviceService {
     );
   }
 
-  getCourseLeaderboard() {
+  getCourseLeaderboardById(courseId: number) {
     return this.http.get<any[]>(
-      `${this.BASE_URL}/leaderboard/courses`
+      `${this.BASE_URL}/leaderboard/course/${courseId}`
     );
   }
+
 
 
   // --------------------
