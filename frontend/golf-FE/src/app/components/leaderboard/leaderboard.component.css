@@ -1,0 +1,42 @@
+.leaderboard-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 3rem 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.leaderboard-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.leaderboard-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s ease;
+}
+
+.leaderboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.record-info {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.score {
+  font-weight: bold;
+  color: #198754;
+}

@@ -1,17 +1,19 @@
-<div class="login-page">
-  <div class="login-card">
+<div class="auth-page">
 
-    <h2>Create Account</h2>
+  <div class="auth-card">
+
+    <h2>Create Your Account</h2>
+    <p class="subtitle">Join the championship experience</p>
 
     <form (ngSubmit)="register()">
 
       <div class="field">
-        <label>Name</label>
+        <label>Full Name</label>
         <input [(ngModel)]="name" name="name" required />
       </div>
 
       <div class="field">
-        <label>Email</label>
+        <label>Email Address</label>
         <input type="email" [(ngModel)]="email" name="email" required />
       </div>
 
@@ -20,14 +22,19 @@
         <input type="password" [(ngModel)]="password" name="password" required />
       </div>
 
-      <button type="submit">Register</button>
+      <button type="submit" class="primary-btn">
+        Create Account
+      </button>
 
     </form>
 
     <p class="switch">
       Already have an account?
-      <a routerLink="/login">Login</a>
+       <li class="nav-item">
+            <a class="nav-link" routerLink="/login">Login</a>
+       </li>
     </p>
 
   </div>
+
 </div>

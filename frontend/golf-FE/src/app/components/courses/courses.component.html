@@ -1,14 +1,49 @@
-<h1>Courses</h1>
+<div class="courses-page">
 
-<p *ngIf="courses.length === 0">
-  No courses loaded yet.
-</p>
+  <h1 class="page-title">Courses</h1>
 
-<ul *ngIf="courses.length > 0">
-  <li *ngFor="let course of courses">
-    <a [routerLink]="['/courses', course.id]">
-      <strong>{{ course.name }}</strong> (Par {{ course.par }})
-    </a>
-  </li>
-</ul>
+  <!-- SEARCH BAR -->
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Search courses..."
+      [(ngModel)]="searchTerm"
+      class="search-input"
+    />
+  </div>
 
+  <p *ngIf="filteredCourses().length === 0" class="empty">
+    No courses found.
+  </p>
+
+  <!-- VERTICAL CARD LIST -->
+  <div class="course-list">
+
+    <div
+      class="course-card"
+      *ngFor="let course of filteredCourses()"
+      [routerLink]="['/courses', course.id]"
+    >
+
+      <!-- IMAGE -->
+      <div
+        class="course-image"
+        *ngIf="course.images?.length"
+        [style.background-image]="'url(' + course.images[0] + ')'"
+      ></div>
+
+      <!-- INFO -->
+      <div class="course-info">
+        <h2>{{ course.name }}</h2>
+        <p>{{ course.location }}</p>
+
+        <div class="course-meta">
+          <span class="badge">Par {{ course.par }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

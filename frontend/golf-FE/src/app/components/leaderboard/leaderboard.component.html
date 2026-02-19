@@ -1,0 +1,18 @@
+<div class="leaderboard-page">
+
+  <h1>Course Records</h1>
+
+  <div class="leaderboard-card" *ngFor="let row of leaderboard">
+
+    <div class="course-name">
+      {{ row.course }}
+    </div>
+
+    <div class="record-info">
+      <span class="player">🏌️ {{ row.player }}</span>
+      <span class="score">🏆 {{ row.score }}</span>
+    </div>
+
+  </div>
+
+</div>

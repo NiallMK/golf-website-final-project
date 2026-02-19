@@ -11,6 +11,7 @@ import { BookTeeTimeComponent } from './components/book-tee-time/book-tee-time.c
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CourseComponent } from './components/course/course.component';
+import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 
 import { AuthGuard } from './guards/auth.guard';
 
@@ -56,6 +57,11 @@ export const routes: Routes = [
   {
     path: 'book',
     component: BookTeeTimeComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'leaderboard',
+    component: LeaderboardComponent,
     canActivate: [AuthGuard]
   }
 

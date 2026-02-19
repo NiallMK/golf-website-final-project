@@ -64,6 +64,13 @@ export class WebserviceService {
     );
   }
 
+  getCourseLeaderboard() {
+    return this.http.get<any[]>(
+      `${this.BASE_URL}/leaderboard/courses`
+    );
+  }
+
+
   // --------------------
   // USER / PROFILE (AUTH)
   // --------------------

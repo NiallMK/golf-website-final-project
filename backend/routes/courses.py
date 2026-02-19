@@ -10,29 +10,34 @@ courses_bp = Blueprint("courses", __name__)
 @courses_bp.route("/courses", methods=["GET"])
 def get_courses():
     db = get_db()
-    try:
-        cur = db.cursor()
+    cur = db.cursor()
 
-        cur.execute("""
-            SELECT id, name, par
-            FROM courses
-            ORDER BY name
-        """)
-        rows = cur.fetchall()
+    cur.execute("""
+        SELECT id, name, location, par,
+               slope_rating, image_url
+        FROM courses
+    """)
 
-        courses = [
-            {
-                "id": row["id"],
-                "name": row["name"],
-                "par": row["par"]
-            }
-            for row in rows
-        ]
+    rows = cur.fetchall()
 
-        return jsonify(courses), 200
+    courses = []
 
-    finally:
-        db.close()
+    for row in rows:
+        images = []
+        if row["image_url"]:
+            images = json.loads(row["image_url"])
+
+        courses.append({
+            "id": row["id"],
+            "name": row["name"],
+            "location": row["location"],
+            "par": row["par"],
+            "slope_rating": row["slope_rating"],
+            "images": images
+        })
+
+    return jsonify(courses)
+
 
 
 # --------------------------------------
@@ -99,3 +104,42 @@ def get_course_holes(course_id):
         ]), 200
     finally:
         db.close()
+
+#-------------------------------------------------------------------
+# LEADERBOARD FOR EACH COURSE
+#-------------------------------------------------------------------
+
+@courses_bp.route("/leaderboard/courses", methods=["GET"])
+def course_leaderboard():
+    db = get_db()
+    cur = db.cursor() 
+
+    cur.execute("""
+        SELECT c.name AS course_name,
+               u.name AS player_name,
+               MIN(rt.total_score) AS best_score
+        FROM (
+            SELECT r.id,
+                   r.course_id,
+                   r.user_id,
+                   SUM(s.strokes) AS total_score
+            FROM rounds r
+            JOIN hole_scores s ON r.id = s.round_id
+            GROUP BY r.id
+        ) rt
+        JOIN courses c ON rt.course_id = c.id
+        JOIN users u ON rt.user_id = u.id
+        GROUP BY rt.course_id
+    """)
+
+    rows = cur.fetchall()
+
+    return jsonify([
+        {
+            "course": row["course_name"],
+            "player": row["player_name"],
+            "score": row["best_score"]
+        }
+        for row in rows
+    ])
+
