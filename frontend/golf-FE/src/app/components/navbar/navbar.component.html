@@ -9,24 +9,20 @@
       class="navbar-toggler"
       type="button"
       data-bs-toggle="collapse"
-      data-bs-target="#golfNavbar"
-    >
+      data-bs-target="#golfNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="golfNavbar">
 
-      <!-- Left links -->
+      <!-- LEFT SIDE -->
       <ul class="navbar-nav me-auto">
 
-        <!-- Always visible -->
         <li class="nav-item">
-          <a
-            class="nav-link"
-            routerLink="/"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
+          <a class="nav-link"
+             routerLink="/"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
             Home
           </a>
         </li>
@@ -35,7 +31,6 @@
           <a class="nav-link" routerLink="/courses">Courses</a>
         </li>
 
-        <!-- Logged-in only -->
         <ng-container *ngIf="user">
           <li class="nav-item">
             <a class="nav-link" routerLink="/book">Book</a>
@@ -50,42 +45,44 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" routerLink="/profile">Profile</a>
-          </li>
-
-          <li class="nav-item">
             <a class="nav-link" routerLink="/leaderboard">Leaderboards</a>
           </li>
 
-
-        </ng-container>
-
-        <!-- Logged-out only -->
-        <ng-container *ngIf="!user">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/login">Login</a>
+            <a class="nav-link" routerLink="/profile">Profile</a>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/register">Register</a>
+          <li class="nav-item" *ngIf="auth.isAdmin()">
+            <a class="nav-link" routerLink="/admin">Admin Panel</a>
           </li>
         </ng-container>
 
       </ul>
 
-      <!-- Right side (logged-in only) -->
-      <div *ngIf="user" class="d-flex align-items-center gap-3">
+      <!-- RIGHT SIDE -->
+      <div class="d-flex align-items-center gap-3">
 
-        <div class="navbar-text handicap-badge">
-          Handicap
-          <span class="badge bg-light text-dark">
-            {{ user.current_handicap ?? '—' }}
-          </span>
-        </div>
+        <!-- Logged-out -->
+        <ng-container *ngIf="!user">
+          <a routerLink="/login" class="auth-btn">Login</a>
+          <a routerLink="/register" class="auth-btn">Register</a>
+        </ng-container>
 
-        <button class="btn btn-outline-light btn-sm" (click)="logout()">
-          Logout
-        </button>
+        <!-- Logged-in -->
+        <ng-container *ngIf="user">
+
+          <div class="handicap-display">
+            <span class="handicap-label">Handicap</span>
+            <span class="handicap-score">
+              {{ user.current_handicap ?? '—' }}
+            </span>
+          </div>
+
+          <button class="btn btn-outline-light btn-sm" (click)="logout()">
+            Logout
+          </button>
+
+        </ng-container>
 
       </div>
 

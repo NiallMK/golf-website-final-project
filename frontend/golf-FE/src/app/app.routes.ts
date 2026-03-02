@@ -12,8 +12,10 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CourseComponent } from './components/course/course.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
 
@@ -63,6 +65,11 @@ export const routes: Routes = [
     path: 'leaderboard',
     component: LeaderboardComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [AdminGuard]
   }
 
 ];

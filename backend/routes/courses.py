@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request, session
 from db import get_db
 import json
 
@@ -53,7 +53,7 @@ def get_course(course_id):
 
         cur.execute("""
             SELECT id, name, location, par,
-                   course_rating, slope_rating, image_url, latitude, longitude
+                   course_rating, slope_rating, image_url, latitude, longitude, description
             FROM courses
             WHERE id = ?
         """, (course_id,))
@@ -75,7 +75,8 @@ def get_course(course_id):
             "slope_rating": row["slope_rating"],
             "images": images,
             "latitude": row["latitude"],
-            "longitude": row["longitude"]
+            "longitude": row["longitude"],
+            "description": row["description"]
         }), 200
 
     finally:
@@ -143,3 +144,72 @@ def course_leaderboard(course_id):
         }
         for row in rows
     ])
+
+# --------------------------------------
+# ADMIN: ADD COURSE
+# --------------------------------------
+@courses_bp.route("/courses", methods=["POST"])
+def add_course():
+    # check if a user is logged in
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    db = get_db()
+    try:
+        cur = db.cursor()
+
+        # Check user role, are they an admin?
+        cur.execute(
+            "SELECT role FROM users WHERE id = ?",
+            (session["user_id"],)
+        )
+        user = cur.fetchone()
+
+        if not user or user["role"] != "admin":
+            return jsonify({"error": "Forbidden - Admins only"}), 403
+
+        # Get request data
+        data = request.get_json()
+
+        name = data.get("name")
+        location = data.get("location")
+        par = data.get("par")
+        course_rating = data.get("course_rating")
+        slope_rating = data.get("slope_rating")
+        images = data.get("images", [])
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        description = data.get("description")
+
+        if not name or par is None or course_rating is None or slope_rating is None:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        images = [img for img in images if img]
+
+        #store images as JSON strings
+        image_json = json.dumps(images) if images else None
+
+        # insert into golf-website.db
+        cur.execute("""
+            INSERT INTO courses
+            (name, location, par, course_rating, slope_rating,
+             image_url, latitude, longitude, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            name,
+            location,
+            par,
+            course_rating,
+            slope_rating,
+            image_json,
+            latitude,
+            longitude,
+            description
+        ))
+
+        db.commit()
+
+        return jsonify({"message": "Course added successfully"}), 201
+
+    finally:
+        db.close()

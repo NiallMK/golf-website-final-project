@@ -28,7 +28,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<any> {
     return this.http.post(
-      `${this.BASE_URL}/login`,
+      `${this.BASE_URL}/auth/login`,
       { email, password },
       { withCredentials: true }
     );
@@ -36,7 +36,7 @@ export class AuthService {
 
   logout(): Observable<any> {
     return this.http.post(
-      `${this.BASE_URL}/logout`,
+      `${this.BASE_URL}/auth/logout`,
       {},
       { withCredentials: true }
     );
@@ -75,6 +75,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.currentUser !== null;
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser?.role === 'admin';
   }
 
 }

@@ -2,8 +2,9 @@
    GOLF NAVBAR – FULL STYLES
    ============================== */
 
+/* NAVBAR BASE */
 nav.golf-navbar {
-  background-color: #1f7a4f; /* main golf green */
+  background-color: #1f7a4f;
   padding: 0.75rem 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
@@ -27,9 +28,9 @@ nav.golf-navbar .nav-link {
   transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* HOVER HIGHLIGHT */
+/* HOVER */
 nav.golf-navbar .nav-link:hover {
-  background-color: #145a38; /* darker green */
+  background-color: #145a38;
   transform: scale(1.05);
 }
 
@@ -39,21 +40,46 @@ nav.golf-navbar .nav-link.active {
   font-weight: 600;
 }
 
-/* HANDICAP TEXT */
-nav.golf-navbar .handicap-badge {
-  color: #ffffff;
+/* AUTH BUTTONS (Login / Register) */
+nav.golf-navbar .auth-btn {
+  background-color: #ffffff;
+  color: #1f7a4f;
   font-weight: 600;
-  display: flex;
-  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-/* HANDICAP BADGE */
-nav.golf-navbar .badge {
-  background-color: #145a38;
+nav.golf-navbar .auth-btn:hover {
+  background-color: #f2f2f2;
+  color: #145a38;
+  transform: scale(1.05);
+}
+
+/* HANDICAP DISPLAY */
+nav.golf-navbar .handicap-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: #ffffff;
+  font-weight: 600;
+}
+
+nav.golf-navbar .handicap-label {
   font-size: 0.9rem;
-  padding: 0.45em 0.6em;
-  border-radius: 0.4rem;
+  opacity: 0.9;
+}
+
+nav.golf-navbar .handicap-score {
+  background-color: #ffffff;
+  color: #1f7a4f;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: center;
 }
 
 /* MOBILE TOGGLER */

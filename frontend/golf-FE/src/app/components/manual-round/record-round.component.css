@@ -3,13 +3,36 @@
    ============================== */
 
 .record-round-container {
-  min-height: 70vh;
+  position: relative;
+  min-height: 100vh;   /* FULL SCREEN */
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f3f7f5, #e6f0eb);
   padding: 2rem;
+  overflow: hidden;
 }
+
+.record-round-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: url('C:/Users/mcker/golf-website/frontend/golf-FE/public/images/teeoff.jpg') center/cover no-repeat;
+
+  filter: blur(3px);         /* BLUR LEVEL */
+  transform: scale(1.1);     /* Prevent blur edge crop */
+
+  z-index: -1;
+}
+
+.record-round-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: -1;
+}
+
 
 .record-round-card {
   background: #ffffff;

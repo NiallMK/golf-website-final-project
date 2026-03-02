@@ -54,6 +54,15 @@
   font-weight: bold;
 }
 
+.course-description {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  max-width: 800px;
+}
+
+
 .difficulty {
   margin-bottom: 2rem;
 }

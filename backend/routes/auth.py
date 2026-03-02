@@ -29,8 +29,8 @@ def register():
         password_hash = generate_password_hash(password)
 
         cur.execute("""
-            INSERT INTO users (email, password_hash, name)
-            VALUES (?, ?, ?)
+            INSERT INTO users (email, password_hash, name, role)
+            VALUES (?, ?, ?, 'user')
         """, (email, password_hash, name))
 
         user_id = cur.lastrowid
@@ -43,7 +43,8 @@ def register():
             "user": {
                 "id": user_id,
                 "email": email,
-                "name": name
+                "name": name,
+                "role": "user"
             }
         }), 201
 
@@ -64,7 +65,7 @@ def login():
     cur = db.cursor()
 
     cur.execute("""
-        SELECT id, password_hash, name
+        SELECT id, password_hash, name, role
         FROM users
         WHERE email = ?
     """, (email,))
@@ -80,12 +81,13 @@ def login():
         "message": "Logged in",
         "user": {
             "id": user["id"],
-            "name": user["name"]
+            "name": user["name"],
+            "role": user["role"]
         }
     })
 
 #who is using this website right now?
-@auth_bp.route("/auth/me", methods=["GET"])
+@auth_bp.route("/me", methods=["GET"])
 def me():
     if "user_id" not in session:
         return jsonify({"user": None}), 401

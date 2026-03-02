@@ -22,7 +22,7 @@ def create_app():
     app.register_blueprint(handicap_bp, url_prefix="/api")
     app.register_blueprint(courses_bp, url_prefix="/api")
     app.register_blueprint(users_bp, url_prefix="/api")
-    app.register_blueprint(auth_bp, url_prefix="/api")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
     app.config.update(
         SESSION_COOKIE_SECURE=False  # must be False on http://localhost

@@ -95,5 +95,15 @@ ADD COLUMN is_completed INTEGER DEFAULT 0;
 ALTER TABLE courses
 ADD COLUMN image_url TEXT;
 
-ALTER TABLE courses ADD COLUMN latitude REAL;
-ALTER TABLE courses ADD COLUMN longitude REAL;
+ALTER TABLE courses 
+ADD COLUMN latitude REAL;
+
+ALTER TABLE courses 
+ADD COLUMN longitude REAL;
+
+ALTER TABLE courses 
+ADD COLUMN description TEXT;
+
+ALTER TABLE users 
+ADD COLUMN role TEXT NOT NULL DEFAULT 'user';
+
