@@ -14,7 +14,7 @@ def get_courses():
 
     cur.execute("""
         SELECT id, name, location, par,
-               slope_rating, image_url
+               slope_rating, image_url, latitude, longitude, description
         FROM courses
     """)
 
@@ -33,18 +33,18 @@ def get_courses():
             "location": row["location"],
             "par": row["par"],
             "slope_rating": row["slope_rating"],
-            "images": images
+            "images": images,
+            "latitude": row["latitude"],
+            "longitude": row["longitude"],
+            "description": row["description"]
         })
 
     return jsonify(courses)
 
 
-
 # --------------------------------------
-# GET SINGLE COURSE (OPTIONAL)
+# GET SINGLE COURSE
 # --------------------------------------
-import json
-
 @courses_bp.route("/courses/<int:course_id>", methods=["GET"])
 def get_course(course_id):
     db = get_db()
@@ -53,10 +53,12 @@ def get_course(course_id):
 
         cur.execute("""
             SELECT id, name, location, par,
-                   course_rating, slope_rating, image_url, latitude, longitude, description
+                   course_rating, slope_rating,
+                   image_url, latitude, longitude, description
             FROM courses
             WHERE id = ?
         """, (course_id,))
+
         row = cur.fetchone()
 
         if not row:
@@ -82,8 +84,10 @@ def get_course(course_id):
     finally:
         db.close()
 
-#------------------------------------------------------------------
-#GET the individual holes 
+
+# --------------------------------------
+# GET COURSE HOLES
+# --------------------------------------
 @courses_bp.route("/courses/<int:course_id>/holes", methods=["GET"])
 def get_course_holes(course_id):
     db = get_db()
@@ -95,6 +99,7 @@ def get_course_holes(course_id):
             WHERE course_id = ?
             ORDER BY hole_number
         """, (course_id,))
+
         rows = cur.fetchall()
 
         return jsonify([
@@ -105,13 +110,14 @@ def get_course_holes(course_id):
             }
             for r in rows
         ]), 200
+
     finally:
         db.close()
 
-#-------------------------------------------------------------------
-# LEADERBOARD FOR EACH COURSE
-#-------------------------------------------------------------------
 
+# --------------------------------------
+# LEADERBOARD FOR EACH COURSE
+# --------------------------------------
 @courses_bp.route("/leaderboard/course/<int:course_id>", methods=["GET"])
 def course_leaderboard(course_id):
     db = get_db()
@@ -145,12 +151,13 @@ def course_leaderboard(course_id):
         for row in rows
     ])
 
+
 # --------------------------------------
 # ADMIN: ADD COURSE
 # --------------------------------------
 @courses_bp.route("/courses", methods=["POST"])
 def add_course():
-    # check if a user is logged in
+
     if "user_id" not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
@@ -158,7 +165,6 @@ def add_course():
     try:
         cur = db.cursor()
 
-        # Check user role, are they an admin?
         cur.execute(
             "SELECT role FROM users WHERE id = ?",
             (session["user_id"],)
@@ -168,7 +174,6 @@ def add_course():
         if not user or user["role"] != "admin":
             return jsonify({"error": "Forbidden - Admins only"}), 403
 
-        # Get request data
         data = request.get_json()
 
         name = data.get("name")
@@ -183,13 +188,13 @@ def add_course():
 
         if not name or par is None or course_rating is None or slope_rating is None:
             return jsonify({"error": "Missing required fields"}), 400
-        
-        images = [img for img in images if img]
 
-        #store images as JSON strings
+        if not isinstance(images, list):
+            return jsonify({"error": "Images must be a list"}), 400
+
+        images = [img for img in images if img]
         image_json = json.dumps(images) if images else None
 
-        # insert into golf-website.db
         cur.execute("""
             INSERT INTO courses
             (name, location, par, course_rating, slope_rating,
@@ -210,6 +215,113 @@ def add_course():
         db.commit()
 
         return jsonify({"message": "Course added successfully"}), 201
+
+    finally:
+        db.close()
+
+
+# --------------------------------------
+# ADMIN: DELETE COURSE
+# --------------------------------------
+@courses_bp.route("/courses/<int:course_id>", methods=["DELETE"])
+def delete_course(course_id):
+
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    db = get_db()
+    try:
+        cur = db.cursor()
+
+        cur.execute(
+            "SELECT role FROM users WHERE id = ?",
+            (session["user_id"],)
+        )
+        user = cur.fetchone()
+
+        if not user or user["role"] != "admin":
+            return jsonify({"error": "Forbidden - Admins only"}), 403
+
+        cur.execute("DELETE FROM courses WHERE id = ?", (course_id,))
+        db.commit()
+
+        return jsonify({"message": "Course deleted"}), 200
+
+    finally:
+        db.close()
+
+
+# --------------------------------------
+# ADMIN: UPDATE COURSE
+# --------------------------------------
+@courses_bp.route("/courses/<int:course_id>", methods=["PUT"])
+def update_course(course_id):
+
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    db = get_db()
+    try:
+        cur = db.cursor()
+
+        cur.execute(
+            "SELECT role FROM users WHERE id = ?",
+            (session["user_id"],)
+        )
+        user = cur.fetchone()
+
+        if not user or user["role"] != "admin":
+            return jsonify({"error": "Forbidden - Admins only"}), 403
+
+        data = request.get_json()
+
+        name = data.get("name")
+        location = data.get("location")
+        par = data.get("par")
+        course_rating = data.get("course_rating")
+        slope_rating = data.get("slope_rating")
+        images = data.get("images", [])
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        description = data.get("description")
+
+        if not name or par is None or course_rating is None or slope_rating is None:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        if not isinstance(images, list):
+            return jsonify({"error": "Images must be a list"}), 400
+
+        images = [img for img in images if img]
+        image_json = json.dumps(images) if images else None
+
+        cur.execute("""
+            UPDATE courses
+            SET name = ?,
+                location = ?,
+                par = ?,
+                course_rating = ?,
+                slope_rating = ?,
+                image_url = ?,
+                latitude = ?,
+                longitude = ?,
+                description = ?
+            WHERE id = ?
+        """, (
+            name,
+            location,
+            par,
+            course_rating,
+            slope_rating,
+            image_json,
+            latitude,
+            longitude,
+            description,
+            course_id
+        ))
+
+        db.commit()
+
+        return jsonify({"message": "Course updated"}), 200
 
     finally:
         db.close()

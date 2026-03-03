@@ -95,7 +95,7 @@ def me():
     db = get_db()
     cur = db.cursor()
     cur.execute("""
-        SELECT id, name, email, current_handicap
+        SELECT id, name, email, current_handicap, role
         FROM users
         WHERE id = ?
     """, (session["user_id"],))
